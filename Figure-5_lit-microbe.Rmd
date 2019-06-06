@@ -1,0 +1,151 @@
+---
+title: "Untitled"
+author: "Rebecca Hoyd"
+date: "April 10, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(ggtree)
+library(phylogram)
+library(rotl)
+library(dplyr)
+library(forcats)
+library(gridExtra)
+library(tidyr)
+```
+
+# Getting information from the OTL (open tree of life) on the interesting taxa and creating initial dendrogram
+
+```{r access data from otl}
+hazardtable <- readRDS("../data/generated/hazard-table.RDS")
+antiorder <- hazardtable %>%
+  arrange(Average.Rank) 
+antiorder <- antiorder$Antibacterial
+
+litmics <- c("akkermansia muciniphila",
+                                   "parabacteroides distasonis",
+                                   "bacteroides nordii",
+                                   "bacteroides clarus",
+                                   "clostridium bolteae",
+                                   "cloacibacilis porcorum",
+                                   "ruminococcus bromii",
+                                   "porphyromonas pasteri",
+                                   "clostridium hungatei",
+                                   "gardnerella vaginalis",
+                                   "prevotella histicola",
+                                   "desulfovibrio alaskensis",
+                                   "collinsella aerofaciens",
+                                   "bifidobacterium adolescentis",
+                                   "klebsiella pneumoniae",
+                                   "bifidobacterium longum",
+                                   "blautia obeum",
+                                   "roseburia intestinalis")
+
+taxa <- tnrs_match_names(names = litmics)
+
+tree <- tol_induced_subtree(ott_ids = ott_id(taxa))
+
+tree$tip.label <- gsub("_ott\\d+", "", tree$tip.label)
+tree$tip.label <- gsub("_", " ", tree$tip.label)
+
+d <- fortify(tree)
+d <- subset(d, isTip)
+order <- with(d, label[order(y, decreasing=T)])
+
+tree$tip.label[1] <- "Klebsiella pneumoniae"
+```
+
+
+# Adding info on responders/non-responders
+
+```{r create frame of info for aesthetics}
+resp.stat <- c("r", "n", "n", "n", "n", "r", "r", "r", "r", "n", "n", "n", "r", "r", "r", "r", "n", "n")
+
+resp.ref <- c("r", "r", "r", "r", "r", "r", "g", "g", "g", "g", "g", "g", "m", "m", "m", "m", "m", "m")
+resp.key <- as.data.frame(cbind(search_string = litmics, resp.stat, resp.ref)) %>%
+  mutate(fixed = "hold") 
+
+resp.key <- taxa %>%
+  dplyr::select(search_string, unique_name) %>%
+  left_join(resp.key) %>%
+  mutate(tip.label = unique_name) %>%
+  dplyr::select(tip.label, resp.stat, resp.ref)
+
+
+resp.key$tip.label <- gsub("_ott\\d+", "", resp.key$tip.label)
+resp.key$tip.label <- gsub("_", " ", resp.key$tip.label)
+resp.key$tip.label[15] <- "Klebsiella pneumoniae"
+```
+
+```{r create dendrogram}
+tree.plot <- ggtree(tree)  %<+%
+  resp.key + 
+  geom_tiplab(aes(color = resp.stat), geom = "text", offset = 0.2) +
+  #geom_text2(aes(subset=!isTip, label=node), hjust=-.3) +
+  #geom_nodelab() +
+  scale_color_manual(breaks = c("n", "r"), values = c("darkred", "royalblue")) +
+  geom_tippoint(aes(shape = resp.ref), size = 2) +
+  scale_shape_manual(breaks = c("g", "m", "r"), values = c("square", "circle", "triangle")) +
+  geom_cladelabel(node = 30, label = "Bacteroidetes \n(Gopalakrishnan)", geom = "text", color = "darkred", offset = -2.3, offset.text = -2.7, align = TRUE) +
+  geom_cladelabel(node = 22, label = "Firmicutes \n(Gopalakrishnan)", geom = "text", color = "royalblue", offset = -4.3, offset.text = -2.6, align = TRUE) +
+  xlim(c(0,11.5)) 
+  
+tree.plot
+```
+
+
+# Accompanying susceptibility heatmap
+```{r define data for heatmap}
+m <- "m"
+n <- "n"
+y <- "y"
+
+blacc <- c(m,m,y,m,n,m,m,y,y,y,y,y,y,y,y,y,m,y)
+clin <- c(y,y,y,y,y,n,y,y,y,y,n,n,n,n,n,n,y,y)
+fq <- c(y,n,y,y,n,y,n,y,y,y,n,y,n,y,n,n,n,y)
+macr <- c(n,n,y,n,n,y,n,y,y,m,y,y,m,y,y,y,m,m)
+metr <- c(y,y,y,y,y,n,m,m,m,y,m,n,y,y,y,y,n,n)
+trim <- c(n,n,n,n,n,n,n,n,n,n,n,y,n,n,n,n,n,n)
+van <- c(n,n,y,n,n,n,n,y,y,y,y,m,y,y,y,y,n,n)
+tetr <- rep("n", 18)
+
+susc <- as.data.frame(cbind(taxon = order, `BetaLactam` = blacc, Clindamycin = clin, Fluoroquinolone = fq, Macrolide = macr, Metronidazole = macr, Trimethoprim = trim, Vancomycin = van, Tetracycline = tetr))
+
+susc <- susc %>%
+  gather(-taxon, key = "Antibiotic", value = Effective)
+```
+
+```{r construct heatmap}
+heat <- ggplot(data = susc, aes(fct_relevel(taxon, rev(order)), fct_relevel(Antibiotic, antiorder))) + 
+  geom_tile(aes(fill = Effective)) +
+  scale_fill_manual(breaks = c("yes", "no", "maybe"), values = c("orange", "darkred", "royalblue")) +
+  coord_flip() +
+  labs(x = "", y = "") +
+  theme_bw() +
+  theme(axis.text.x = element_text(hjust = 1, angle = 45, size = 10), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+heat
+```
+
+# Arrange and save the results
+
+```{r}
+
+test2 <- grid.arrange(
+  grobs = list(tree.plot, heat),
+   widths = c(2.8,1.2),
+   heights = c(1, .13),
+   layout_matrix = rbind(c(1,2),
+                         c(NA,2))
+) 
+
+
+ggsave(plot = test2, filename = "../figures/Figure-4/abx_susceptibility_dendrogram.png", device = "png", height = 8, width = 9)
+
+```
+
+

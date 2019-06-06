@@ -1,0 +1,66 @@
+---
+title: 'Figure 3: combined model'
+author: "Rebecca Hoyd"
+date: "May 13, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(survminer)
+library(survival)
+library(survMisc)
+library(ggplot2)
+library(dplyr)
+library(glue)
+```
+
+
+```{r}
+db <- readRDS("../data/from_processing/deidentdb_timing.RDS")
+```
+
+```{r}
+check.window <- function(vect, per){
+  wind <- per[1]:per[2]
+  wind <- glue_collapse(as.character(wind), sep = ",|,")
+  wind <- paste(",", wind, ",", sep = "")
+  ifelse(grepl(pattern = wind, x = vect), 1, 0)
+}
+
+db <- db %>%
+  mutate(abxdays.to.iostart = paste(",", abxdays.to.iostart, ",", sep = ""),
+         sterdays.to.start = paste(",", sterdays.to.start, ",", sep = ""),
+         abx.28.28 = check.window(abxdays.to.iostart, c(-28,28)),
+         steroid.28.28 = check.window(sterdays.to.start, c(-28,28)))
+```
+
+# Survival curves: Abx and Steroid
+```{r}
+sfit <- survfit(Surv(days, vitalstatus) ~ abx.28.28 + steroid.28.28, data = db)
+
+comb_curv <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE)
+
+comb_curv
+```
+
+```{r}
+ggsave(print(comb_curv), filename = "../figures/Figure-3/combined-curve.png", device = "png")
+```
+
+#Combined model
+```{r}
+db <- db %>%
+  mutate(Antibiotics = abx.28.28,
+         Steroids = steroid.28.28,
+         ECOG = ecog,
+         BMI = bmi,
+         Sex = sex,
+         Age = age)
+
+cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + BMI + Sex + Age, data = db)
+
+ggforest(cph) +
+  ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
+```
