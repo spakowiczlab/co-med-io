@@ -18,7 +18,7 @@ library(UpSetR)
 ```
 
 ```{r load data}
-db <- readRDS("../data/from_processing/deidentdb_reclassify_ster-filter.RDS")
+db <- readRDS("db.RDS")
 ```
 
 ```{r}

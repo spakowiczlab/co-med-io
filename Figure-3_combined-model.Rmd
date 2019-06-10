@@ -18,7 +18,7 @@ library(glue)
 
 
 ```{r}
-db <- readRDS("../data/from_processing/deidentdb_timing.RDS")
+db <- readRDS("db.RDS")
 ```
 
 ```{r}

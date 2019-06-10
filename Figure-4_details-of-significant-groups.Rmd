@@ -20,9 +20,9 @@ library(gridExtra)
 ```
 
 ```{r load data}
-db <- readRDS("../data/from_processing/deidentdb_timing.RDS")
+db <- readRDS("db.RDS")
 
-sterkey <- read.table("../data/from_processing/steroid-dbid-key.tsv")
+sterkey <- read.table("steroid-dbid-key.tsv")
 
 sterkey <- sterkey %>%
   select(-Drug.name)
@@ -607,5 +607,5 @@ sumaryhazardranks <- rbind(Times.Worst = Times.Worst, Times.Worst.3 = Times.Wors
 ```
 
 ```{r}
-saveRDS(sumaryhazardranks, "../data/generated/hazard-table.RDS")
+saveRDS(sumaryhazardranks, "hazard-table.RDS")
 ```

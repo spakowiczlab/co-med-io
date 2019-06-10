@@ -21,7 +21,7 @@ library(tidyr)
 # Getting information from the OTL (open tree of life) on the interesting taxa and creating initial dendrogram
 
 ```{r access data from otl}
-hazardtable <- readRDS("../data/generated/hazard-table.RDS")
+hazardtable <- readRDS("hazard-table.RDS")
 antiorder <- hazardtable %>%
   arrange(Average.Rank) 
 antiorder <- antiorder$Antibacterial
