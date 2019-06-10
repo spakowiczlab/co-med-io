@@ -58,7 +58,7 @@ almeds.plots <- ggsurvplot(sfits, pval = TRUE, conf.int = FALSE, risk.table = TR
 ```
 
 ```{r save survival plots}
-lapply(meds_iostart, function(x) ggsave(print(almeds.plots[[x]]), filename = paste("../figures/Figure-1/surv-curve_", x, ".png", sep = ""), device = "png"))
+# lapply(meds_iostart, function(x) ggsave(print(almeds.plots[[x]]), filename = paste("../figures/Figure-1/surv-curve_", x, ".png", sep = ""), device = "png"))
 ```
 
 # NotDetermined) Upsetr plot
@@ -71,11 +71,11 @@ colnames(dat.for.upset) <- c("H2B", "NSAIDs", "PPI", "Statins", "Steroids", "Ant
 ```
 
 ```{r save upset}
-png("../figures/Figure-1/upset_all-meds-confounding.png", units = "in", height = 5, width = 8, res = 600)
+# png("../figures/Figure-1/upset_all-meds-confounding.png", units = "in", height = 5, width = 8, res = 600)
 
 upset(dat.for.upset, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "")
 
-dev.off()
+# dev.off()
 ```
 
 
@@ -187,5 +187,5 @@ heat.plot <- heat.data %>%
 ```
 
 ```{r}
-ggsave(plot = heat.plot, filename = "../figures/Figure-1/heatmap_pvalues-by-cancer.png", width = 5, height = 7, device = "png")
+# ggsave(plot = heat.plot, filename = "../figures/Figure-1/heatmap_pvalues-by-cancer.png", width = 5, height = 7, device = "png")
 ```

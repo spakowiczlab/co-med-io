@@ -144,7 +144,7 @@ test2 <- grid.arrange(
 ) 
 
 
-ggsave(plot = test2, filename = "../figures/Figure-4/abx_susceptibility_dendrogram.png", device = "png", height = 8, width = 9)
+# ggsave(plot = test2, filename = "../figures/Figure-4/abx_susceptibility_dendrogram.png", device = "png", height = 8, width = 9)
 
 ```
 

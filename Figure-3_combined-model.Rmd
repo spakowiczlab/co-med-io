@@ -46,7 +46,7 @@ comb_curv
 ```
 
 ```{r}
-ggsave(print(comb_curv), filename = "../figures/Figure-3/combined-curve.png", device = "png")
+# ggsave(print(comb_curv), filename = "../figures/Figure-3/combined-curve.png", device = "png")
 ```
 
 #Combined model
@@ -61,6 +61,6 @@ db <- db %>%
 
 cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + BMI + Sex + Age, data = db)
 
-ggforest(cph) +
-  ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
+ggforest(cph) 
+  # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
 ```

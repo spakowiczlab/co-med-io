@@ -96,8 +96,8 @@ ggplot(data = sterpvaltime, aes(x = leftanchor, y = hazard.ratio)) +
   geom_ribbon(aes(ymin = low.bound, ymax = upper.bound), alpha = 0.5, fill = "darkblue") +
   geom_hline(yintercept = 1) +
   labs(title = "Hazard ratio of steroid prescription over time", x = "Time relative to IO start",y = "Hazard Ratio" ) +
-  theme_bw() + 
-  ggsave("../figures/Figure-2/timing-hr_steroids.png")
+  theme_bw()  
+  # + ggsave("../figures/Figure-2/timing-hr_steroids.png")
 
 ```
 
@@ -156,8 +156,8 @@ ggplot(data = abxpvaltime, aes(x = leftanchor, y = hazard.ratio)) +
   geom_ribbon(aes(ymin = low.bound, ymax = upper.bound), alpha = 0.5, fill = "darkblue") +
   geom_hline(yintercept = 1) +
   labs(title = "Hazard ratio of ATB prescription over time", x = "Time relative to IO start",y = "Hazard Ratio" ) +
-  theme_bw() + 
-  ggsave("../figures/Figure-2/timing-hr_atb.png")
+  theme_bw()  
+  # + ggsave("../figures/Figure-2/timing-hr_atb.png")
 
 ```
 
@@ -508,7 +508,7 @@ test <- grid.arrange(
                         c(2,2,2))
 ) 
 
-ggsave(plot = test, "../figures/Figure-2/heatmap_clustered-abx-classes.png", device = "png", height = 10, width = 8)
+# ggsave(plot = test, "../figures/Figure-2/heatmap_clustered-abx-classes.png", device = "png", height = 10, width = 8)
 ```
 
 
@@ -522,7 +522,7 @@ test2 <- grid.arrange(
                         c(2,2,2))
 ) 
 
-ggsave(plot = test2, "../figures/Figure-2/heatmap_clustered-steroids.png", device = "png", height = 10, width = 7)
+# ggsave(plot = test2, "../figures/Figure-2/heatmap_clustered-steroids.png", device = "png", height = 10, width = 7)
 ```
 
 
