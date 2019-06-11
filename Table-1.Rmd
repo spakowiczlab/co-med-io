@@ -21,7 +21,7 @@ library(tableone)
 
 ```{r data}
 # Data
-db <- readRDS("../data/from_processing/deidentdb_timing.RDS")
+db <- readRDS("db.RDS")
 
 # db <- 
 #   db %>%
