@@ -37,7 +37,7 @@ ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunoth
 
 coxdf <- 
   db %>%
-  select(vitalstatus, months, abx.180.180, steroid_iostart, age, bmi.calc, ecog,
+  select(vitalstatus, age, bmi.calc, ecog,
          sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io) %>%
   left_join(ionames)
 ```
