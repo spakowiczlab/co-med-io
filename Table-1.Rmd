@@ -1,0 +1,55 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+title: Concomitant medications affect overall survival in cancer patients undergoing immunotherapy
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Libraries
+library(survival)
+library(survminer)
+library(tidyverse)
+library(tableone)
+
+
+
+```
+
+```{r data}
+# Data
+db <- readRDS("../data/from_processing/deidentdb_timing.RDS")
+
+# db <- 
+#   db %>%
+#   drop_na(vitalstatus, months)
+```
+
+
+
+
+```{r prepare dataset}
+ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunotherapy = c("Nivolumab", "Pembrolizumab", "Atezolizumab", "Ipilimumab", "Nivo + Ipi", "Medi4736 + Tremelimumab", "Tremelimumab", "Nivo + Chemo", "MEDI4736, durvalumab", "Other"))) %>%
+  mutate(immunotherapy = as.numeric(as.character(immunotherapy)))
+
+coxdf <- 
+  db %>%
+  select(vitalstatus, months, abx.180.180, steroid_iostart, age, bmi.calc, ecog,
+         sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io) %>%
+  left_join(ionames)
+```
+
+```{r table 1}
+listVars <- c("bmi.calc", "age", "sex", "cancer.name", "Immunotherapy", "ecog")
+catVars <- c("sex", "cancer.name", "Immunotherapy", "ecog")
+table1 <- CreateTableOne(vars = listVars,
+                         data = coxdf,
+                         factorVars = catVars)
+table1
+```
+
+
+

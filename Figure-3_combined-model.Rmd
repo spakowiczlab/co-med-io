@@ -55,7 +55,7 @@ db <- db %>%
   mutate(Antibiotics = abx.28.28,
          Steroids = steroid.28.28,
          ECOG = ecog,
-         BMI = bmi,
+         BMI = bmi.calc,
          Sex = sex,
          Age = age)
 
