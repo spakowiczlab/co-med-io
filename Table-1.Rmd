@@ -38,13 +38,13 @@ ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunoth
 coxdf <- 
   db %>%
   select(vitalstatus, age, bmi.calc, ecog,
-         sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io) %>%
+         sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging) %>%
   left_join(ionames)
 ```
 
 ```{r table 1}
-listVars <- c("bmi.calc", "age", "sex", "cancer.name", "Immunotherapy", "ecog")
-catVars <- c("sex", "cancer.name", "Immunotherapy", "ecog")
+listVars <- c("bmi.calc", "staging", "age", "sex", "cancer.name", "Immunotherapy", "ecog")
+catVars <- c("sex", "cancer.name", "Immunotherapy", "ecog", "staging")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
                          factorVars = catVars)
