@@ -40,7 +40,7 @@ db <- db %>%
 ```{r define interesting columns}
 meds_iostart <- c("h2b_iostart", "nsaid_iostart", "ppi", "statin", "steroid.28.28", "abx.28.28")
 
-allcancers <- unique(db$cancer.name)[1:14]
+allcancers <- unique(db$cancer.name)[1:7]
 ```
 
 # A) Survival curves of each medication at iostart
@@ -175,15 +175,17 @@ heat.data <- as.data.frame(allcancpvals)  %>%
 
 ```{r}
 heat.plot <- heat.data %>%
-  ggplot(aes(meds, cancer)) +
+  ggplot(aes(meds, fct_relevel(cancer, "Other"))) +
   geom_tile(aes(fill = p.value)) +
-  geom_label(aes(label = labtext, colour = fct_relevel(labcol, "red", "black")), size = 1.3) +
-  scale_colour_manual(name = "Hazard Ratio", breaks = c("red", "black"), labels = c("<1", ">=1"), values = c("red", "black")) +
   labs(x = "", y = "") +
+  geom_point(aes(shape = labcol), size = 5) +
   scale_fill_distiller(guide = "legend", breaks = c(0.000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), limits = c(0, 1), values = c(0.000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), type = "div", palette = "RdBu", direction = 1, labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
+  scale_shape_manual(breaks = c("black", "red"), values = c("-", "+"), labels = c("Negative effect on OS", "Positive effect on OS"), name = "Direction") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_discrete(breaks = meds_iostart, labels = c("H2B", "NSAIDs", "PPI", "Statins", "Steroids", "Antibiotics"))
+
+heat.plot
 ```
 
 ```{r}
