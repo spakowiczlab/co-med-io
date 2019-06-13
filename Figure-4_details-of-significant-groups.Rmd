@@ -36,7 +36,7 @@ abxclasses <- c("BetaLactam", "Macrolide",  "Other.Antibacterial", "Fluoroquinol
 
 orgtype <- c("Antibacterial", "Antiviral", "Antifungal")
 
-allcancers <- unique(db$cancer.name)[1:14]
+allcancers <- unique(db$cancer.name)[1:7]
 ```
 
 # A) Hazard Ratio over time
@@ -235,12 +235,12 @@ for(c in allcancers){
 perorgcancpvals <- bind_rows(pvalbycancorg) %>%
   t() %>%
   as.data.frame()
-colnames(perorgcancpvals) <- names(pvalbycancorg$melanoma)
+colnames(perorgcancpvals) <- names(pvalbycancorg$Other)
 
 perclasscancpvals <- bind_rows(pvalbycancbac) %>%
   t() %>%
   as.data.frame()
-colnames(perclasscancpvals) <- names(pvalbycancbac$melanoma)
+colnames(perclasscancpvals) <- names(pvalbycancbac$Other)
 
 patientsbycanc <- bind_rows(patientsbycanc)
 rownames(patientsbycanc) <- names(pvalbycancbac)
@@ -358,7 +358,7 @@ for (c in allcancers) {
 dbidallcancpvals <- bind_rows(dbidpvalbycancer) %>%
   t() %>%
   as.data.frame()
-colnames(dbidallcancpvals) <- names(dbidpvalbycancer$melanoma)
+colnames(dbidallcancpvals) <- names(dbidpvalbycancer$Other)
 
 dbidpatientsbycanc <- bind_rows(dbidpatientsbycanc)
 rownames(dbidpatientsbycanc) <- names(dbidpvalbycancer)
@@ -471,8 +471,8 @@ Build the heatmap for the antibacterials:
 heatplot <- heatclass %>%
   ggplot(aes(fct_relevel(AbxClass, bacorder), fct_relevel(cancer, as.character(canctree$labels$label)))) +
   geom_tile(aes(fill = p.value )) +
-  geom_label(aes(label = labtext, colour = fct_relevel(labcol, "red", "black")), size = 1.8) +
-  scale_colour_manual(name = "Hazard Ratio", breaks = c("red", "black"), labels = c("<1", ">=1"), values = c("red", "black")) +
+  geom_point(aes(shape = labcol), size = 5) +
+  scale_shape_manual(breaks = c("black", "red"), values = c("-", "+"), labels = c("Negative effect on OS", "Positive effect on OS"), name = "Direction") +
   labs(x = "", y = "") +
   scale_fill_distiller(guide = "legend", breaks = c(0.00000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), limits = c(0, 1), values = c(0.00000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), type = "div", palette = "RdBu", direction = 1, labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
   scale_x_discrete(breaks = bacorder, labels = replace(bacorder, which(bacorder == "Other.Antibacterial"), "Other Antibacerial")) +
@@ -486,8 +486,8 @@ Construct heatmap for steroids:
 dbidheatplot <- heatster %>%
   ggplot(aes(fct_relevel(Steroid.ID, as.character(dbidtree$labels$label)), fct_relevel(cancer, as.character(dbidcanctree$labels$label)))) +
   geom_tile(aes(fill = p.value)) +
-  geom_label(aes(label = labtext, colour = fct_relevel(labcol, "red", "black")), size = 1.5) +
-  scale_colour_manual(name = "Hazard Ratio", breaks = c("red", "black"), labels = c("<1", ">=1"), values = c("red", "black")) +
+  geom_point(aes(shape = labcol), size = 5) +
+  scale_shape_manual(breaks = c("black", "red"), values = c("-", "+"), labels = c("Negative effect on OS", "Positive effect on OS"), name = "Direction") +
   labs(x = "", y = "") +
   scale_fill_distiller(guide = "legend", breaks = c(0.00000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), limits = c(0, 1), values = c(0.00000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), type = "div", palette = "RdBu", direction = 1, labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
   theme_classic() +
