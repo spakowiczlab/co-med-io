@@ -61,6 +61,29 @@ almeds.plots <- ggsurvplot(sfits, pval = TRUE, conf.int = FALSE, risk.table = TR
 # lapply(meds_iostart, function(x) ggsave(print(almeds.plots[[x]]), filename = paste("../figures/Figure-1/surv-curve_", x, ".png", sep = ""), device = "png"))
 ```
 
+```{r retain full cohort info for heatmap}
+almeds.pval <- lapply(sfits, function (x) surv_pvalue(x)[1,2])
+names(almeds.pval) <- names(sfits)
+almeds.hr <- lapply(forms, function(x)  coefficients(summary(coxph(formula = x, data = db)))[,2])
+
+almeds.pval <- bind_rows(almeds.pval)
+almeds.hr <- bind_rows(almeds.hr)
+
+almeds.dat <- as.data.frame(bind_rows(almeds.pval, almeds.hr))
+rownames(almeds.dat) <- c("p.value", "hazrat")
+
+almeds.dat <- almeds.dat %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "meds") %>%
+  mutate(labcol = ifelse(hazrat < 1, "red", "black"),
+         cancer = "All",
+         ns = "", 
+         labtext = "") %>%
+  select(cancer, meds, p.value, hazrat, ns,labtext, labcol)
+  
+```
+
 # NotDetermined) Upsetr plot
 
 ```{r prep for upset}
@@ -174,18 +197,25 @@ heat.data <- as.data.frame(allcancpvals)  %>%
 ```
 
 ```{r}
+heat.data$hazrat <- as.numeric(heat.data$hazrat)
+heat.data <- bind_rows(almeds.dat, heat.data)
+```
+
+```{r}
 heat.plot <- heat.data %>%
-  ggplot(aes(meds, fct_relevel(cancer, "Other"))) +
+  ggplot(aes(meds, fct_relevel(cancer, "Other", "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma", "All"))) +
   geom_tile(aes(fill = p.value)) +
   labs(x = "", y = "") +
   geom_point(aes(shape = labcol), size = 5) +
-  scale_fill_distiller(guide = "legend", breaks = c(0.000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), limits = c(0, 1), values = c(0.000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), type = "div", palette = "RdBu", direction = 1, labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
+  scale_fill_distiller(guide = "legend", breaks = c(0.000000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), limits = c(0, 1), values = c(0.000000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), type = "div", palette = "RdBu", direction = 1, labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
   scale_shape_manual(breaks = c("black", "red"), values = c("-", "+"), labels = c("Negative effect on OS", "Positive effect on OS"), name = "Direction") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_x_discrete(breaks = meds_iostart, labels = c("H2B", "NSAIDs", "PPI", "Statins", "Steroids", "Antibiotics"))
+  scale_x_discrete(breaks = meds_iostart, labels = c("H2B", "NSAIDs", "PPI", "Statins", "Steroids", "Antibiotics")) +
+  scale_y_discrete(breaks = c("Other", "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma", "All"), labels = c("Other", "Bladder Cancer", "Head and Neck\nCarcinoma", "Melanoma", "Non-Small Cell\nLung Cancer", "Renal Cell\nCarcinoma", "Sarcoma", "All"))
 
 heat.plot
+
 ```
 
 ```{r}
