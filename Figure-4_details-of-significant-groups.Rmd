@@ -179,6 +179,8 @@ for(s in statesofinterest){
   db.heat[[paste(s, ".to.start", sep = "")]] <- paste(",", db.heat[[paste(s, ".to.start", sep = "")]], ",", sep = "") 
   db.heat[[s]] <- check.window(db.heat[[paste(s, ".to.start", sep = "")]], edges)
 }
+
+db.heat$Other.Steroid <- ifelse(db.heat$Betamthasone == 1 | db.heat$Fludrocortisone == 1 | db.heat$Prednisolone == 1, 1, 0)
 ```
 
 ## Prepare data for the antibiotic heatmaps
@@ -319,7 +321,7 @@ heatclass <- as.data.frame(perclasscancpvals)  %>%
 ## Prepare data for the steroid heatmaps
 
 ```{r, message=FALSE, warning=FALSE}
-sterdbid <- as.character(sterkey$Generic.ID[1:8])
+sterdbid <- c("Triamcinolone", "Prednisone", "Hydrocortisone", "Methylprednisone", "Dexamethosone", "Other.Steroid")
 
 dbidcurvesbycancer <- list()
 
@@ -422,8 +424,18 @@ bactree <- dendro_data(bactree)
 
 bacorder <- as.character(bactree$labels$label)
 
-dendplot <- ggdendrogram(bactree, rotate = FALSE, labels = FALSE) +
-  theme(axis.text.y = element_blank(), axis.text.x = element_blank())
+
+dendplot <- ggdendrogram(bactree, rotate = FALSE, leaf_labels = FALSE) +
+  geom_segment(aes(x = 1, xend = 1, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 2, xend = 2, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 3, xend = 3, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 4, xend = 4, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 5, xend = 5, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 6, xend = 6, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 7, xend = 7, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 8, xend = 8, y = -4000, yend = 0)) +
+  geom_segment(aes(x = 9, xend = 9, y = -4000, yend = 0)) +
+  theme(axis.text.y = element_blank(), axis.text.x = element_blank(),plot.margin = margin(0,0,0,0))
 
 cancclust <- bind_rows(hrbycancbac) %>%
   t() %>%
@@ -471,29 +483,33 @@ Build the heatmap for the antibacterials:
 ```{r}
 
 heatplot <- heatclass %>%
-  ggplot(aes(fct_relevel(AbxClass, bacorder), fct_relevel(cancer, as.character(canctree$labels$label)))) +
+  ggplot(aes(fct_relevel(AbxClass, bacorder), fct_relevel(cancer, "Other"))) +
   geom_tile(aes(fill = p.value )) +
   geom_point(aes(shape = labcol), size = 5) +
   scale_shape_manual(breaks = c("black", "red"), values = c("-", "+"), labels = c("Negative effect on OS", "Positive effect on OS"), name = "Direction") +
   labs(x = "", y = "") +
   scale_fill_distiller(guide = "legend", breaks = c(0.00000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), limits = c(0, 1), values = c(0.00000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), type = "div", palette = "RdBu", direction = 1, labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
   scale_x_discrete(breaks = bacorder, labels = replace(bacorder, which(bacorder == "Other.Antibacterial"), "Other Antibacerial")) +
+  scale_y_discrete(breaks = c("Other", "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma"), labels = c("Other", "Bladder Cancer", "Head and Neck\nCarcinoma", "Melanoma", "Non-Small Cell\nLung Cancer", "Renal Cell\nCarcinoma", "Sarcoma")) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.text = element_text(size = 10))
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12), axis.text = element_text(size = 12), plot.margin = margin(0,0,0,0))
+
 
 ```
 
 Construct heatmap for steroids:
 ```{r}
 dbidheatplot <- heatster %>%
-  ggplot(aes(fct_relevel(Steroid.ID, as.character(dbidtree$labels$label)), fct_relevel(cancer, as.character(dbidcanctree$labels$label)))) +
+  ggplot(aes(fct_relevel(Steroid.ID, as.character(dbidtree$labels$label)), fct_relevel(cancer, "Other"))) +
   geom_tile(aes(fill = p.value)) +
   geom_point(aes(shape = labcol), size = 5) +
   scale_shape_manual(breaks = c("black", "red"), values = c("-", "+"), labels = c("Negative effect on OS", "Positive effect on OS"), name = "Direction") +
   labs(x = "", y = "") +
   scale_fill_distiller(guide = "legend", breaks = c(0.00000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), limits = c(0, 1), values = c(0.00000000001, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.5, 1), type = "div", palette = "RdBu", direction = 1, labels = c("<0.01", "0.01", "0.02","0.03", "0.04","0.05","0.1", "0.2", "0.5", "1")) +
+  scale_x_discrete(breaks = c("Methylprednisone", "Prednisone", "Dexamethosone", "Hydrocortisone", "Other.Steroid", "Triamcinolone"), labels = c("Methylprednisone", "Prednisone", "Dexamethosone", "Hydrocortisone", "Other Steroid", "Triamcinolone")) +
+  scale_y_discrete(breaks = c("Other", "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma"), labels = c("Other", "Bladder Cancer", "Head and Neck\nCarcinoma", "Melanoma", "Non-Small Cell\nLung Cancer", "Renal Cell\nCarcinoma", "Sarcoma")) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 12), axis.text.y = element_text(size = 12), plot.margin = margin(0,0,0,0)) 
 
 ```
 
