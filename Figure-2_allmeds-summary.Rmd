@@ -54,7 +54,7 @@ for(var in meds_iostart){
 sfits <- surv_fit(formula = forms, data = db)
 names(sfits) <- meds_iostart
 
-almeds.plots <- ggsurvplot(sfits, pval = TRUE, conf.int = FALSE, risk.table = TRUE)
+almeds.plots <- ggsurvplot(sfits, pval = TRUE, conf.int = FALSE, risk.table = TRUE,title = "", legend.title = "", legend.labs = list(c("Not prescribed", "Prescribed")), ylab = "", xlab = "Days", palette = c("slateblue2", "lightsalmon2"), fontsize = 6, font.legend = list(size = 12))
 ```
 
 ```{r save survival plots}
