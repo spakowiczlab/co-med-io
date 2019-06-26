@@ -50,6 +50,11 @@ check.window <- function(vect, per){
 }
 ```
 
+```{r}
+db <- db %>%
+  mutate(abx.180.180 = check.window(paste(",", abxdays.to.iostart, ",", sep = ""), c(-180,180)))
+```
+
 ## Part 1: Steroids
 ```{r, include = FALSE}
 sterfloattime <- db %>%
@@ -526,7 +531,7 @@ test <- grid.arrange(
                         c(2,2,2))
 ) 
 
-# ggsave(plot = test, "../figures/Figure-2/heatmap_clustered-abx-classes.png", device = "png", height = 10, width = 8)
+ #ggsave(plot = test, "../figures/Figure-2/heatmap_clustered-abx-classes.png", device = "png", height = 10, width = 8)
 ```
 
 
@@ -540,7 +545,7 @@ test2 <- grid.arrange(
                         c(2,2,2))
 ) 
 
-# ggsave(plot = test2, "../figures/Figure-2/heatmap_clustered-steroids.png", device = "png", height = 10, width = 7)
+ #ggsave(plot = test2, "../figures/Figure-2/heatmap_clustered-steroids.png", device = "png", height = 10, width = 7)
 ```
 
 
