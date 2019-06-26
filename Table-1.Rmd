@@ -14,8 +14,7 @@ library(survival)
 library(survminer)
 library(tidyverse)
 library(tableone)
-
-
+library(forcats)
 
 ```
 
@@ -32,19 +31,30 @@ db <- readRDS("db.RDS")
 
 
 ```{r prepare dataset}
-ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunotherapy = c("Nivolumab", "Pembrolizumab", "Atezolizumab", "Ipilimumab", "Nivo + Ipi", "Medi4736 + Tremelimumab", "Tremelimumab", "Nivo + Chemo", "MEDI4736, durvalumab", "Other"))) %>%
+ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunotherapy = c("Nivolumab", "Pembrolizumab", "Atezolizumab", "Ipilimumab", "Nivolumab + Ipilimumab", "Medi4736 + Tremelimumab", "Tremelimumab", "Nivolumab + Chemotherapy", "Medi4736 + Durvalumab", "Other"))) %>%
   mutate(immunotherapy = as.numeric(as.character(immunotherapy)))
+
 
 coxdf <- 
   db %>%
   select(vitalstatus, age, bmi.calc, ecog,
          sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging) %>%
-  left_join(ionames)
+  left_join(ionames) %>%
+  mutate(ECOG = ecog,
+         Staging  = staging,
+         BMI = bmi.calc,
+         Age = age,
+         Cancer = cancer.name, 
+         Sex = sex)
+
+coxdf$Immunotherapy <- fct_relevel(coxdf$Immunotherapy, "Atezolizumab", "Ipilimumab", "Medi4736 + Durvalumab", "Medi4736 + Tremelimumab", "Nivolumab", "Nivolumab + Ipilimumab", "Nivolumab + Chemotherapy", "Pembrolizumab", "Tremelimumab", "Other")
+
+coxdf$Cancer <- fct_relevel(coxdf$Cancer, "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma", "Other")
 ```
 
 ```{r table 1}
-listVars <- c("bmi.calc", "staging", "age", "sex", "cancer.name", "Immunotherapy", "ecog")
-catVars <- c("sex", "cancer.name", "Immunotherapy", "ecog", "staging")
+listVars <- c("BMI", "Staging", "Age", "Sex", "Cancer", "Immunotherapy", "ECOG")
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
                          factorVars = catVars)
