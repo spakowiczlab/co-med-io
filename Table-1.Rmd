@@ -9,7 +9,6 @@ title: Concomitant medications affect overall survival in cancer patients underg
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# Libraries
 library(survival)
 library(survminer)
 library(tidyverse)
@@ -20,12 +19,10 @@ library(tableone)
 ```
 
 ```{r data}
-# Data
+
 db <- readRDS("db.RDS")
 
-# db <- 
-#   db %>%
-#   drop_na(vitalstatus, months)
+
 ```
 
 
