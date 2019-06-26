@@ -59,8 +59,8 @@ coxdf <-
          Age = age,
          Cancer = cancer.name, 
          Sex = sex,
-         `ATB within 28 days of IO` = abx.28.28,
-         `CS within 28 days of IO` = steroid.28.28)
+         `ATB within 28 days of ICI` = abx.28.28,
+         `CS within 28 days of ICI` = steroid.28.28)
 
 coxdf$Immunotherapy <- fct_relevel(coxdf$Immunotherapy, "Atezolizumab", "Durvalumab", "Durvalumab + Tremelimumab", "Ipilimumab", "Nivolumab", "Nivolumab + Ipilimumab", "Nivolumab + Chemotherapy", "Pembrolizumab", "Tremelimumab", "Other")
 
@@ -68,7 +68,7 @@ coxdf$Cancer <- fct_relevel(coxdf$Cancer, "Bladder Cancer", "Head and Neck Carci
 ```
 
 ```{r table 1}
-listVars <- c("BMI", "Staging", "Age", "Sex", "Cancer", "Immunotherapy", "ECOG", "ATB within 28 days of IO", "CS within 28 days of IO")
+listVars <- c("BMI", "Staging", "Age", "Sex", "Cancer", "Immunotherapy", "ECOG", "ATB within 28 days of ICI", "CS within 28 days of ICI")
 catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
