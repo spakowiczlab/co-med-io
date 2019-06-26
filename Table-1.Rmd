@@ -13,35 +13,63 @@ library(survival)
 library(survminer)
 library(tidyverse)
 library(tableone)
-
-
-
+library(forcats)
+library(glue)
 ```
 
 ```{r data}
 
 db <- readRDS("db.RDS")
 
+db <-
+  db %>%
+  drop_na(vitalstatus, days)
+```
 
+```{r}
+check.window <- function(vect, per){
+  wind <- per[1]:per[2]
+  wind <- glue_collapse(as.character(wind), sep = ",|,")
+  wind <- paste(",", wind, ",", sep = "")
+  ifelse(grepl(pattern = wind, x = vect), 1, 0)
+}
+
+db <- db %>%
+  mutate(abxdays.to.iostart = paste(",", abxdays.to.iostart, ",", sep = ""),
+         sterdays.to.start = paste(",", sterdays.to.start, ",", sep = ""),
+         abx.28.28 = check.window(abxdays.to.iostart, c(-28,28)),
+         steroid.28.28 = check.window(sterdays.to.start, c(-28,28)))
 ```
 
 
-
-
 ```{r prepare dataset}
-ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunotherapy = c("Nivolumab", "Pembrolizumab", "Atezolizumab", "Ipilimumab", "Nivo + Ipi", "Medi4736 + Tremelimumab", "Tremelimumab", "Nivo + Chemo", "MEDI4736, durvalumab", "Other"))) %>%
+ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunotherapy = c("Nivolumab", "Pembrolizumab", "Atezolizumab", "Ipilimumab", "Nivolumab + Ipilimumab", "Durvalumab + Tremelimumab", "Tremelimumab", "Nivolumab + Chemotherapy", "Durvalumab", "Other"))) %>%
   mutate(immunotherapy = as.numeric(as.character(immunotherapy)))
+
 
 coxdf <- 
   db %>%
   select(vitalstatus, age, bmi.calc, ecog,
-         sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging) %>%
-  left_join(ionames)
+         sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging, abx.28.28,
+         steroid.28.28) %>%
+  left_join(ionames) %>%
+  mutate(ECOG = ecog,
+         Staging  = staging,
+         BMI = bmi.calc,
+         Age = age,
+         Cancer = cancer.name, 
+         Sex = sex,
+         `ATB within 28 days of IO` = abx.28.28,
+         `CS within 28 days of IO` = steroid.28.28)
+
+coxdf$Immunotherapy <- fct_relevel(coxdf$Immunotherapy, "Atezolizumab", "Durvalumab", "Durvalumab + Tremelimumab", "Ipilimumab", "Nivolumab", "Nivolumab + Ipilimumab", "Nivolumab + Chemotherapy", "Pembrolizumab", "Tremelimumab", "Other")
+
+coxdf$Cancer <- fct_relevel(coxdf$Cancer, "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma", "Other")
 ```
 
 ```{r table 1}
-listVars <- c("bmi.calc", "staging", "age", "sex", "cancer.name", "Immunotherapy", "ecog")
-catVars <- c("sex", "cancer.name", "Immunotherapy", "ecog", "staging")
+listVars <- c("BMI", "Staging", "Age", "Sex", "Cancer", "Immunotherapy", "ECOG", "ATB within 28 days of IO", "CS within 28 days of IO")
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
                          factorVars = catVars)
