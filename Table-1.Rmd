@@ -22,9 +22,9 @@ library(glue)
 # Data
 db <- readRDS("db.RDS")
 
-# db <- 
-#   db %>%
-#   drop_na(vitalstatus, months)
+db <-
+  db %>%
+  drop_na(vitalstatus, days)
 ```
 
 ```{r}
