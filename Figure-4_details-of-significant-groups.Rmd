@@ -153,9 +153,9 @@ abxpvaltime$source <- "ATB"
 sterpvaltime$source <- "CS"
 allpvaltime <- bind_rows(abxpvaltime, sterpvaltime)
 
-ggplot(data = allpvaltime, aes(x = leftanchor, y = hazard.ratio, color = source, fill = source)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = low.bound, ymax = upper.bound), alpha = 0.5) +
+ggplot(data = allpvaltime, aes(x = leftanchor, y = hazard.ratio)) +
+  geom_line(aes(color = source)) +
+  geom_ribbon(aes(ymin = low.bound, ymax = upper.bound, fill = source), alpha = 0.5) +
   geom_hline(yintercept = 1) +
   scale_color_manual(aesthetics = c("fill", "color"), breaks = c("ATB", "CS"), values = c("darkred", "darkblue"), name = "Drug") +
   labs(title = "", x = "Days relative to ICI start",y = "Hazard Ratio" ) +
