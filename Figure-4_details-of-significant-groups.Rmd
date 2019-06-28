@@ -95,17 +95,6 @@ sterpvaltime <- bind_rows(sterwindresults)
 sterpvaltime$leftanchor <- sterpvaltime$leftanchor + 15
 ```
 
-```{r}
-ggplot(data = sterpvaltime, aes(x = leftanchor, y = hazard.ratio)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = low.bound, ymax = upper.bound), alpha = 0.5, fill = "darkblue") +
-  geom_hline(yintercept = 1) +
-  labs(title = "", x = "Days relative to IO start",y = "Hazard Ratio" ) +
-  theme_bw() + 
-  theme(axis.text = element_text(size = 10))
-  # + ggsave("../figures/Figure-2/timing-hr_steroids.png")
-
-```
 
 
 ## Part 2: Antibiotics
@@ -156,16 +145,23 @@ abxpvaltime <- bind_rows(abxwindresults)
 abxpvaltime$leftanchor <- abxpvaltime$leftanchor + 15
 ```
 
-```{r}
-ggplot(data = abxpvaltime, aes(x = leftanchor, y = hazard.ratio)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = low.bound, ymax = upper.bound), alpha = 0.5, fill = "darkblue") +
-  geom_hline(yintercept = 1) +
-  labs(title = "", x = "Days relative to IO start",y = "Hazard Ratio" ) +
-  theme_bw() + 
-  theme(axis.text = element_text(size = 10))  
-  # + ggsave("../figures/Figure-2/timing-hr_atb.png")
 
+## Combine + plot results
+
+```{r}
+abxpvaltime$source <- "ATB"
+sterpvaltime$source <- "CS"
+allpvaltime <- bind_rows(abxpvaltime, sterpvaltime)
+
+ggplot(data = allpvaltime, aes(x = leftanchor, y = hazard.ratio, color = source, fill = source)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = low.bound, ymax = upper.bound), alpha = 0.5) +
+  geom_hline(yintercept = 1) +
+  scale_color_manual(aesthetics = c("fill", "color"), breaks = c("ATB", "CS"), values = c("darkred", "darkblue"), name = "Drug") +
+  labs(title = "", x = "Days relative to ICI start",y = "Hazard Ratio" ) +
+  theme_bw() + 
+  theme(axis.text = element_text(size = 12), axis.title = element_text(size = 15)) +
+  ggsave("../figures/Figure-3/timing-hr_all.png", height = 7, width = 7, dpi = 600)
 ```
 
 
