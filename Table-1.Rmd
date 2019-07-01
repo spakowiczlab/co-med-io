@@ -9,8 +9,6 @@ title: Concomitant medications affect overall survival in cancer patients underg
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(survival)
-library(survminer)
 library(tidyverse)
 library(tableone)
 library(forcats)
@@ -54,7 +52,7 @@ coxdf <-
          steroid.28.28) %>%
   left_join(ionames) %>%
   mutate(ECOG = ecog,
-         Staging  = staging,
+         Staging  = ifelse(staging == 5, "Unknown", staging),
          BMI = bmi.calc,
          Age = age,
          Cancer = cancer.name, 
