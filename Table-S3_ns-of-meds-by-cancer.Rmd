@@ -1,0 +1,154 @@
+---
+title: "quick calculating cancer med breakdowns for Mitchell"
+author: "Rebecca Hoyd"
+date: "July 1, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+db <- readRDS("../data/from_processing/deidentdb_timing.RDS")
+
+sterkey <- read.table("../data/from_processing/steroid-dbid-key.tsv")
+
+sterkey <- sterkey %>%
+  select(-Drug.name)
+
+sterkey <- sterkey[!duplicated(sterkey),]
+```
+
+```{r}
+check.window <- function(vect, per){
+  wind <- per[1]:per[2]
+  wind <- glue_collapse(as.character(wind), sep = ",|,")
+  wind <- paste(",", wind, ",", sep = "")
+  ifelse(grepl(pattern = wind, x = vect), 1, 0)
+}
+
+```
+
+```{r}
+to.other <- c("breast cancer", "merkel cell carcinoma", "pancreatic cancer", "Prostate", "small cell lung cancer", "colon cancer", "Hodgkin lymphoma")
+db$cancer.name <-  ifelse(db$cancer.name %in% to.other, "Other", db$cancer.name)
+
+capcanc <- as.data.frame(cbind(cancer.name = c("Other", "bladder cancer", "head and neck carcinoma", "melanoma", "non-small cell lung cancer", "renal cell carcinoma", "Sarcoma"), cap.cancer.name = c("Other", "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma")))
+
+ionames <- as.data.frame(cbind(immunotherapy = c(1,2,3,4,5,6,7,8,9,10), Immunotherapy = c("Nivolumab", "Pembrolizumab", "Atezolizumab", "Ipilimumab", "Nivolumab + Ipilimumab", "Durvalumab + Tremelimumab", "Tremelimumab", "Nivolumab + Chemotherapy", "Durvalumab", "Other"))) %>%
+  mutate(immunotherapy = as.numeric(as.character(immunotherapy)))
+
+db <- db %>%
+  left_join(capcanc) %>%
+  left_join(ionames) %>%
+  mutate(cancer.name = cap.cancer.name) %>%
+  drop_na(days, vitalstatus)
+
+db <- db %>%
+  mutate(abxdays.to.iostart = paste(",", abxdays.to.iostart, ",", sep = ""),
+         sterdays.to.start = paste(",", sterdays.to.start, ",", sep = ""),
+         abx.28.28 = check.window(abxdays.to.iostart, c(-28,28)),
+         steroid.28.28 = check.window(sterdays.to.start, c(-28,28)))
+
+```
+
+```{r}
+abxclasses <- c("BetaLactam", "Macrolide",  "Other.Antibacterial", "Fluoroquinolone", "Tetracycline", "Vancomycin", "Trimethoprim", "Clindamycin", "Metronidazole")
+
+sterdbid <- c("Triamcinolone", "Prednisone", "Hydrocortisone", "Methylprednisone", "Dexamethosone", "Other.Steroid")
+
+allcancers <- unique(db$cancer.name)[1:7]
+```
+
+
+```{r}
+statesofinterest <- c(abxclasses, as.character(sterkey$Generic.ID))
+
+edges <- c(-28,28)
+
+for(s in statesofinterest){
+  db[[paste(s, ".to.start", sep = "")]] <- paste(",", db[[paste(s, ".to.start", sep = "")]], ",", sep = "") 
+  db[[s]] <- check.window(db[[paste(s, ".to.start", sep = "")]], edges)
+}
+
+db$Other.Steroid <- ifelse(db$Betamthasone == 1 | db$Fludrocortisone == 1 | db$Prednisolone == 1, 1, 0)
+```
+
+
+#Calculation for all cancers
+
+Note: the .28.28 columns are your "alls", eg abx.28.28 = all atbs
+## ATB's
+```{r}
+db %>%
+  gather(abxclasses, abx.28.28, key = "ATB", value = "yn") %>%
+  filter(yn == 1) %>%
+  group_by(ATB) %>%
+  tally()
+```
+
+## CS
+```{r}
+db %>%
+  gather(sterdbid, steroid.28.28, key = "CS", value = "yn") %>%
+  filter(yn == 1) %>%
+  group_by(CS) %>%
+  tally()
+```
+
+## Others
+```{r}
+db %>%
+  gather(h2b_iostart, statin, ppi, nsaid_iostart, key = "other.med.start", value = "yn") %>%
+  filter(yn == 1) %>%
+  group_by(other.med.start) %>%
+  tally()
+  
+```
+
+
+## Immunotherapy
+```{r}
+db %>%
+  group_by(Immunotherapy) %>%
+  tally()
+```
+
+#Calculation for each cancer
+
+Note: the .28.28 columns are your "alls", eg abx.28.28 = all atbs
+## ATB's
+```{r}
+db %>%
+  gather(abxclasses, abx.28.28, key = "ATB", value = "yn") %>%
+  filter(yn == 1) %>%
+  group_by(cancer.name, ATB) %>%
+  tally()
+```
+
+## CS
+```{r}
+db %>%
+  gather(sterdbid, steroid.28.28, key = "CS", value = "yn") %>%
+  filter(yn == 1) %>%
+  group_by(cancer.name, CS) %>%
+  tally()
+```
+
+## Others
+```{r}
+db %>%
+  gather(h2b_iostart, statin, ppi, nsaid_iostart, key = "other.med.start", value = "yn") %>%
+  filter(yn == 1) %>%
+  group_by(cancer.name, other.med.start) %>%
+  tally()
+  
+```
+
+## Immunotherapy
+```{r}
+db %>%
+  group_by(cancer.name, Immunotherapy) %>%
+  tally()
+```

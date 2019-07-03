@@ -320,7 +320,7 @@ heatclass <- as.data.frame(perclasscancpvals)  %>%
 ```
 
 Save data from all cancers:
-```{r retain full cohort info for heatmap}
+```{r}
 
 x <- coefficients(summary(coxph(formula = g, data = db.heat)))
 
@@ -343,7 +343,7 @@ albac.dat <- albac.dat %>%
 
 
 Save data from all meds:
-```{r retain full cohort info for heatmap}
+```{r}
 sfits <- list()
 db <- db %>%
   mutate(abx.28.28 = check.window(paste(",", abxdays.to.iostart, ",", sep = ""), c(-28,28)))
@@ -510,7 +510,7 @@ alster.dat <- alster.dat %>%
 
 
 Save data from all meds:
-```{r retain full cohort info for heatmap}
+```{r}
 sfits <- list()
 db <- db %>%
   mutate(ster.28.28 = check.window(paste(",", sterdays.to.start, ",", sep = ""), c(-28,28)))

@@ -88,7 +88,7 @@ tree.plot <- ggtree(tree)  %<+%
   #geom_text2(aes(subset=!isTip, label=node), hjust=-.3) +
   #geom_nodelab() +
   scale_color_manual(breaks = c("n", "r"), values = c("darkred", "royalblue")) +
-  geom_tippoint(aes(shape = resp.ref), size = 2) +
+  geom_tippoint(aes(shape = resp.ref), size = 5) +
   scale_shape_manual(breaks = c("g", "m", "r"), values = c("square", "circle", "triangle")) +
   geom_cladelabel(node = 30, label = "Bacteroidetes \n(Gopalakrishnan)", geom = "text", color = "darkred", offset = -2.3, offset.text = -2.7, align = TRUE) +
   geom_cladelabel(node = 22, label = "Firmicutes \n(Gopalakrishnan)", geom = "text", color = "royalblue", offset = -4.3, offset.text = -2.6, align = TRUE) +
@@ -121,12 +121,13 @@ susc <- susc %>%
 
 ```{r construct heatmap}
 heat <- ggplot(data = susc, aes(fct_relevel(taxon, rev(order)), fct_relevel(Antibiotic, antiorder))) + 
-  geom_tile(aes(fill = Effective)) +
-  scale_fill_manual(breaks = c("yes", "no", "maybe"), values = c("orange", "darkred", "royalblue")) +
+  geom_tile(aes(fill = Effective, color = "black")) +
+  scale_fill_manual(breaks = c("yes", "no", "maybe"), values = c("aquamarine", "lightcyan1", "darkcyan")) +
+  scale_color_manual(breaks = "black", values = "grey65") +
   coord_flip() +
   labs(x = "", y = "") +
   theme_bw() +
-  theme(axis.text.x = element_text(hjust = 1, angle = 45, size = 10), axis.text.y = element_blank(), axis.ticks.y = element_blank())
+  theme(axis.text.x = element_text(hjust = 1, angle = 45, size = 10), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position = "none")
 
 heat
 ```

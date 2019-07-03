@@ -54,6 +54,7 @@ db <- db %>%
 #Combined model split by cancer
 ```{r}
 db <- db %>%
+  filter(staging != 5) %>%
   mutate(ATB = abx.28.28,
          CS = steroid.28.28,
          ECOG = ecog,
@@ -87,5 +88,5 @@ res.by.canc <- bind_rows(res.by.canc)
 ```
 
 ```{r}
-write.csv(res.by.canc, "../tables/Table_2/Table_2-our-results.csv", row.names = FALSE)
+#write.csv(res.by.canc, "../tables/Table_2/Table_2-our-results.csv", row.names = FALSE)
 ```
