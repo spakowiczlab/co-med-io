@@ -66,8 +66,8 @@ coxdf$Cancer <- fct_relevel(coxdf$Cancer, "Bladder Cancer", "Head and Neck Carci
 ```
 
 ```{r table 1}
-listVars <- c("BMI", "Staging", "Age", "Sex", "Cancer", "Immunotherapy", "ECOG", "ATB within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging")
+listVars <- c("BMI", "Age", "Sex", "ECOG","Cancer", "Staging", "Immunotherapy", "ATB within 28 days of ICI", "CS within 28 days of ICI")
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging", "ATB within 28 days of ICI", "CS within 28 days of ICI")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
                          factorVars = catVars)
