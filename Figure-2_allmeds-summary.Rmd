@@ -84,22 +84,6 @@ almeds.dat <- almeds.dat %>%
   
 ```
 
-# NotDetermined) Upsetr plot
-
-```{r prep for upset}
-dat.for.upset <- db %>%
-  select(meds_iostart)
-
-colnames(dat.for.upset) <- c("H2B", "NSAIDs", "PPI", "Statins", "Steroids", "Antibiotics")
-```
-
-```{r save upset}
-# png("../figures/Figure-1/upset_all-meds-confounding.png", units = "in", height = 5, width = 8, res = 600)
-
-upset(dat.for.upset, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "")
-
-# dev.off()
-```
 
 
 # Also NotDetermined) Heatmap of values when split by cancer

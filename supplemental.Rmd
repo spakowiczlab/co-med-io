@@ -19,6 +19,8 @@ library(tibble)
 ```{r}
 db <- readRDS("db.RDS")
 
+genbreak <- readRDS("allmeds-for-upset.RDS")
+
 sterkey <- read.table("steroid-dbid-key.tsv")
 
 sterkey <- sterkey %>%
@@ -146,6 +148,70 @@ colnames(dat.for.upset)[6] <- "Other Steroid"
 #png("../figures/supplemental/upset_steroid.png", units = "in", height = 5, width = 8, res = 600)
 
 upset(dat.for.upset, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 7)
+
+#dev.off()
+```
+
+# Figure S4)
+
+```{r}
+blac <- c("Penicillin-V", "Amoxicillin", "Amoxicillin-Clavulanate", "Ampicillin", "Ampicillin-Sulbactam","Piperacillin-Tazobactam", "Cephalexin", "Ceftriaxone", "Cefepime", "Aztreonam")
+
+FQ <- c("Ciprofloxacin", "Levofloxacin", "Moxifloxacin")
+
+macabx <- c("Azithromycin", "Clarithromycin", "Erythromycin")
+
+tetabx <- c("Doxycycline", "Minocycline")
+
+othabx <- c("Linezolid", "Daptomycin")
+
+antvir <- c("Acyclovir", "Ganciclovir", "Valacyclovir", "Valaciclovir", "Valganciclovir", "Foscarnet", "Oseltamivir")
+
+antfun <- c("Fluconazole", "Voriconazole", "Posaconazole", "Caspofungin", "Micafungin")
+```
+
+```{r}
+genblacs <- genbreak %>%
+  select(blac)
+
+genfq <- genbreak %>%
+  select(FQ)
+
+genmac <- genbreak %>%
+  select(macabx)
+
+gentet <- genbreak %>%
+  select(tetabx)
+```
+
+```{r}
+#png("../figures/supplemental/S4_betalactams.png")
+
+upset(genblacs, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
+
+#dev.off()
+```
+
+```{r}
+#png("../figures/supplemental/S4_FQ.png")
+
+upset(genfq, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
+
+#dev.off()
+```
+
+```{r}
+#png("../figures/supplemental/S4_macrolides.png")
+
+upset(genmac, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
+
+#dev.off()
+```
+
+```{r}
+#png("../figures/supplemental/S4_tetracyclines.png")
+
+upset(gentet, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
 
 #dev.off()
 ```
