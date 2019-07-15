@@ -63,9 +63,12 @@ db <- db %>%
          ECOG = ecog,
          BMI = bmi.calc,
          Sex = sex,
-         Age = age)
+         Age = age,
+         `Stage IV` = ifelse(staging == 4, 1, 0),
+         CCI = ifelse(comorb.score == 0, 1, ifelse(comorb.score < 3, 2, 3))
+         )
 
-cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + BMI + Sex + Age, data = db)
+cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + `Stage IV`+ CCI + BMI + Sex + Age, data = db)
 
 ggforest(cph) 
   # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
