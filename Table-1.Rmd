@@ -49,7 +49,7 @@ coxdf <-
   db %>%
   select(vitalstatus, age, bmi.calc, ecog,
          sex, cancer.name, statin, ppi, nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging, abx.28.28,
-         steroid.28.28) %>%
+         steroid.28.28, comorb.score) %>%
   left_join(ionames) %>%
   mutate(ECOG = ecog,
          Staging  = ifelse(staging == 5, "Unknown", staging),
@@ -58,7 +58,9 @@ coxdf <-
          Cancer = cancer.name, 
          Sex = sex,
          `ATB within 28 days of ICI` = abx.28.28,
-         `CS within 28 days of ICI` = steroid.28.28)
+         `CS within 28 days of ICI` = steroid.28.28, 
+         `Charleson Comorbidity Score` = ifelse(comorb.score == 0, "0", 
+                                                ifelse(comorb.score < 3, "1-2", ">=3")))
 
 coxdf$Immunotherapy <- fct_relevel(coxdf$Immunotherapy, "Atezolizumab", "Durvalumab", "Durvalumab + Tremelimumab", "Ipilimumab", "Nivolumab", "Nivolumab + Ipilimumab", "Nivolumab + Chemotherapy", "Pembrolizumab", "Tremelimumab", "Other")
 
@@ -66,8 +68,8 @@ coxdf$Cancer <- fct_relevel(coxdf$Cancer, "Bladder Cancer", "Head and Neck Carci
 ```
 
 ```{r table 1}
-listVars <- c("BMI", "Age", "Sex", "ECOG","Cancer", "Staging", "Immunotherapy", "ATB within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging", "ATB within 28 days of ICI", "CS within 28 days of ICI")
+listVars <- c("BMI", "Age", "Sex", "ECOG","Cancer", "Staging", "Charleson Comorbidity Score", "Immunotherapy", "ATB within 28 days of ICI", "CS within 28 days of ICI")
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging", "ATB within 28 days of ICI", "CS within 28 days of ICI", "Charleson Comorbidity Score")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
                          factorVars = catVars)
