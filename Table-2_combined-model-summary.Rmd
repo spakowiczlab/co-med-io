@@ -60,7 +60,10 @@ db <- db %>%
          ECOG = ecog,
          BMI = bmi.calc,
          Sex = sex,
-         Age = age) %>%
+         Age = age, 
+         `Stage IV` = ifelse(staging == 4, 1, 0),
+         CCI = ifelse(comorb.score == 0, "0", 
+                      ifelse(comorb.score < 3, "1-2", ">=3"))) %>%
   drop_na(days, vitalstatus)
 
 allcancers <- unique(db$cancer.name)[1:7]
@@ -76,7 +79,7 @@ for(c in allcancers){
   n.cs <- sum(tmp$CS)
   n.all <- length(tmp$cancer.name)
   
-  res.by.canc[[c]] <- coxph(Surv(days, vitalstatus) ~ ATB + CS + ECOG + BMI + Sex + Age, data = tmp) %>%
+  res.by.canc[[c]] <- coxph(Surv(days, vitalstatus) ~ ATB + CS + ECOG + BMI + Sex + Age + `Stage IV` + CCI, data = tmp) %>%
     tidy() %>%
     filter(term == "ATB"|term == "CS") %>%
     mutate(Ref = NA, `Cancer Type` = c, `Drug Type` = term, Timing = "+/- 28", `Sig PFS` = NA, `Sig OS` = ifelse(p.value < .05, "Yes", "No"), `N drug Users` = c(n.atb, n.cs), `N total` = n.all, `PFS HR` = NA, `OS HR` = exp(estimate), `Uni vs Multi Variate` = "Multi", Covariates = ifelse(term == "ATB", "CS, ECOG, BMI, Sex, Age", "ATB, ECOG, BMI, Sex, Age")) %>%
