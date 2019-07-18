@@ -104,28 +104,32 @@ m <- "m"
 n <- "n"
 y <- "y"
 
-blacc <- c(m,m,y,m,n,m,m,y,y,y,y,y,y,y,y,y,m,y)
-clin <- c(y,y,y,y,y,n,y,y,y,y,n,n,n,n,n,n,y,y)
-fq <- c(y,n,y,y,n,y,n,y,y,y,n,y,n,y,n,n,n,y)
-macr <- c(n,n,y,n,n,y,n,y,y,m,y,y,m,y,y,y,m,m)
-metr <- c(y,y,y,y,y,n,m,m,m,y,m,n,y,y,y,y,n,n)
-trim <- c(n,n,n,n,n,n,n,n,n,n,n,y,n,n,n,n,n,n)
-van <- c(n,n,y,n,n,n,n,y,y,y,y,m,y,y,y,y,n,n)
-tetr <- rep("n", 18)
+ceph <- c(n,n,n,n,n,y,y,y,y,y,y,n,n,n,n,n,y,n)
+pip <- c(y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,n)
+amclac <- c(y,y,y,y,y,y,n,y,y,y,y,y,y,y,y,y,y,y)
+clin <- c(y,y,y,y,y,y,n,y,y,y,y,n,n,n,n,n,y,y)
+fq <- c(y,y,y,y,y,n,y,y,y,y,y,y,y,y,y,y,y,y)
+macr <- c(y,y,y,y,y,y,n,y,y,y,y,n,n,n,n,n,y,y)
+metr <- c(y,y,y,y,y,n,y,n,n,n,n,y,y,y,y,y,y,n)
+trim <- c(n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,n,y)
+van <- c(n,n,n,n,n,n,y,y,y,y,y,y,y,y,y,y,n,n)
+tetr <- c(y,y,y,y,y,y,n,y,y,y,y,y,y,y,y,y,y,y)
+line <- c(y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,n)
 
-susc <- as.data.frame(cbind(taxon = order, `BetaLactam` = blacc, Clindamycin = clin, Fluoroquinolone = fq, Macrolide = macr, Metronidazole = macr, Trimethoprim = trim, Vancomycin = van, Tetracycline = tetr))
+susc <- as.data.frame(cbind(taxon = order, Cephalosporins = ceph, Piperacillin = pip, Amoxicillin = amclac,  Clindamycin = clin, Fluoroquinolone = fq, Macrolide = macr, Metronidazole = macr, Sulfamethoxazole = trim, Vancomycin = van, Tetracycline = tetr, Linezolid = line))
 
 susc <- susc %>%
   gather(-taxon, key = "Antibiotic", value = Effective)
 ```
 
 ```{r construct heatmap}
-heat <- ggplot(data = susc, aes(fct_relevel(taxon, rev(order)), fct_relevel(Antibiotic, antiorder))) + 
+heat <- ggplot(data = susc, aes(fct_relevel(taxon, rev(order)), fct_relevel(Antibiotic, c("Cephalosporins", "Piperacillin", "Amoxicillin", antiorder[-1])))) + 
   geom_tile(aes(fill = Effective, color = "black")) +
-  scale_fill_manual(breaks = c("yes", "no", "maybe"), values = c("aquamarine", "lightcyan1", "darkcyan")) +
-  scale_color_manual(breaks = "black", values = "grey65") +
+  scale_fill_manual(breaks = c("yes", "no"), values = c("lightcyan1", "seagreen")) +
+  scale_color_manual(breaks = "black", values = "grey85") +
   coord_flip() +
   labs(x = "", y = "") +
+  scale_y_discrete(breaks = c("Cephalosporins", "Piperacillin", "Amoxicillin", "Clindamycin", "Vancomycin", "Sulfamethoxazole", "Tetracycline", "Fluoroquinolone", "Macrolide", "Metronidazole", "Linezolid"), labels = c("Cephalosporins", "Piperacillin-Tazobactam", "Amoxicillin-Clavulanate", "Clindamycin", "Vancomycin", "Sulfamethoxazole-Trimethoprim", "Tetracycline", "Fluoroquinolone", "Macrolide", "Metronidazole", "Linezolid")) +
   theme_bw() +
   theme(axis.text.x = element_text(hjust = 1, angle = 45, size = 10), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position = "none")
 
@@ -138,15 +142,101 @@ heat
 
 test2 <- grid.arrange(
   grobs = list(tree.plot, heat),
-   widths = c(2.8,1.2),
-   heights = c(1, .13),
-   layout_matrix = rbind(c(1,2),
+   widths = c(2,1.2),
+   heights = c(0, 1, .23),
+   layout_matrix = rbind(c(NA,2),
+                         c(1,2),
                          c(NA,2))
 ) 
 
 
 # ggsave(plot = test2, filename = "../figures/Figure-4/abx_susceptibility_dendrogram.png", device = "png", height = 8, width = 9)
 
+```
+
+# Fisher's exact tests
+
+Counting
+```{r}
+test <- susc %>%
+  mutate(tip.label = ifelse(taxon == "Klebsiella pneumoniae (species in domain Eukaryota)", "Klebsiella pneumoniae", as.character(taxon))) %>%
+  left_join(resp.key)
+
+test2 <- test %>%
+  group_by(Antibiotic, Effective, resp.stat) %>%
+  tally() %>%
+  arrange(Antibiotic, Effective, resp.stat)
+```
+
+Ammoxicillin-Clavulanate
+```{r}
+x <- c(1,0,8,9)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Cephalosporin
+```{r}
+x <- c(7,4,2,5)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Fluoroquinolone
+```{r}
+x <- c(0,1,9,8)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+
+Linezolid
+```{r}
+x <- c(0,1,9,8)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Macrolide
+```{r}
+x <- c(4,2,5,7)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Metronidazole
+```{r}
+x <- c(4,2,5,7)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Piperacillin-Tazobactam
+```{r}
+x <- c(0,1,9,8)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Sulfamethoxazole-Trimethoprim
+```{r}
+x <- c(9,8,0,1)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Tetracycline
+```{r}
+x <- c(1,0,8,9)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
+```
+
+Vancomycin
+```{r}
+x <- c(4,4,5,5)
+y <- matrix(x, ncol = 2)
+fisher.test(y)
 ```
 
 
