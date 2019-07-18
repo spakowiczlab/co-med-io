@@ -742,6 +742,12 @@ rankinghrs <- bind_cols(rankinghrs) %>%
 rownames(rankinghrs) <- colnames(hazardrats)
 rankinghrs <- t(rankinghrs) %>%
   as.data.frame()
+
+# This is done to fill in NA's, will need to be changed if data changes
+rankinghrs$Linezolid <- c(9,9,9,9,9,1,3)
+rankinghrs$Metronidazole <- c(7,8,4,2,7,8,8)
+rankinghrs$Sulfamethoxazole <- c(3,6,4,3,2,7,8)
+rankinghrs$Tetracycline <- c(1,2,8,2,8,8,4)
 ```
 
 ```{r}
