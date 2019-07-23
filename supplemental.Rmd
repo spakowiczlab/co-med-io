@@ -13,6 +13,13 @@ library(flextable)
 library(UpSetR)
 library(glue)
 library(tibble)
+library(tidyverse)
+library(dagitty)
+library(ggdag)
+library(causaleffect)
+library(igraph)
+library(rgl)
+#devtools::install_github("malcolmbarrett/ggdag")
 ```
 
 # Load data
@@ -216,3 +223,42 @@ upset(gentet, main.bar.color = "darkred", mainbar.y.label = "Number of Patients"
 #dev.off()
 ```
 
+# Figure S1 causual model Mitchell Muniak
+```{r, out.width="100%", out.height="100%"}
+
+g <- graph.formula("ATB" -+ "Microbiome",
+                   "Microbiome" -+ "T-cell Mediated Inflammation" -+ "IO Response",
+                   "Prostaglandin Inflammation" -+ "Microbiome" -+  "T-cell Mediated Inflammation",
+                   "PPI" -+ "Microbiome",
+                   "H2B" -+ "Microbiome",
+                   "NSAIDs" -+ "Prostaglandin Inflammation",
+                   "Corticosteroids" -+ "T-cell Mediated Inflammation",
+                   "Corticosteroids" -+ "Prostaglandin Inflammation",
+                   "Age" -+ "Prostaglandin Inflammation",
+                   "Age" -+ "T-cell Mediated Inflammation",
+                   "Age" -+ "Microbiome",
+                   "Staging" -+ "Prostaglandin Inflammation",
+                   "ECOG" -+ "Prostaglandin Inflammation",
+                   "ECOG" -+ "T-cell Mediated Inflammation",
+                   "ECOG" -+ "Microbiome",
+                   "BMI" -+ "Prostaglandin Inflammation",
+                   "BMI" -+ "T-cell Mediated Inflammation",
+                   "BMI" -+ "Microbiome",
+                   "CCI" -+ "Corticosteroids",
+                   "CCI" -+ "H2B",
+                   "CCI" -+ "PPI",
+                   "CCI" -+ "NSAIDs",
+                   "CCI" -+ "ATB",
+                   "CCI" -+ "ECOG",
+                   "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
+                   "ICI Response" -+ "Overall Survival",
+                   
+                      simplify = TRUE)
+
+E(g)$label = letters[1:ecount(g)]
+plot(g)
+
+plot.igraph(g, size = 90)
+
+tkplot(g)
+```
