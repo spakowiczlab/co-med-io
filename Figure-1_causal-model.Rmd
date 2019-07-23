@@ -7,24 +7,15 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library("tidyverse")
-library("dagitty")
-library("ggdag")
-library("causaleffect")
-library("igraph")
-library("rgl")
+library(tidyverse)
+library(dagitty)
+library(ggdag)
+library(causaleffect)
+library(igraph)
+library(rgl)
 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-```{r}
-list.of.packages <- c("tidyverse", "dagitty", "ggdag", "causaleffect",
-
-                      "igraph", "rgl")
-
-install.load::install_load(list.of.packages)
-```
 
 ```{r}
 library(httr)
@@ -35,208 +26,45 @@ use_proxy(url="proxy.osumc.edu", port=8080)
 
 )
 
-
 devtools::install_github("malcolmbarrett/ggdag")
 ```
 
-```{r, out.width="100%", out.height="100%"}
-
-g <- graph.formula("Chemotherapy" -+ "Immune System" -+ "BSI",
-
-                   "Chemotherapy" -+ "Gut Integrity" -+ "BSI",
-
-                   "Immune System" -+ "BSI",
-
-                   "Immune System" -+ "GVHD",
-
-                   "Gut Integrity"-+ "GVHD",
-
-                   "Vitamin A" -+ "Gut Integrity",
-
-                   "Microbiome" -+ "GVHD",
-
-                   "Gut Integrity" -+ "Microbiome",
-
-                   "Immune System" -+ "Cancer Outcome",
-
-                   "Chemotherapy" -+ "Cancer Outcome",
-
-                   "Microbiome" -+ "Immune System",
-
-                   "Age" -+ "Immune System",
-
-                   "BMI" -+ "Immune System",
-
-                      simplify = TRUE)
-
-plot.igraph(g, size = 90)
-
-tkplot(g)
-```
-Below is a diagram based on the power point version.
+Here, I am remaking the diagram post feedback.  This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 
 
 ```{r, out.width="100%", out.height="100%"}
 
 g <- graph.formula("ATB" -+ "Microbiome",
-                   "Microbiome" -+ "Inflammation A" -+ "IO Response",
-                   "Microbiome" -+ "Inflammation B" -+ "IO Response",
-                   "Microbiome" -+ "IO Response",
-                   "ATB" -+ "IO Response",
-                   "Corticosteroids" -+ "IO Response",
-                   "Corticosteroids" -+ "Microbiome",
-                   "PPI" -+ "IO Response",
-                   "PPI" -+ "Microbiome",
-                   "H2B" -+ "IO Response",
-                   "H2B" -+ "Microbiome",
-                   "NSAIDs" -+ "Microbiome",
-                   "NSAIDs" -+ "Inflammation B",
-                   "NSAIDs" -+ "IO Response",
-                    simplify = TRUE)
-
-plot.igraph(g, size = 90)
-
-tkplot(g)
-
-text(-1, 0,"[1, 2, 3]")
-text(0, 1,"[3, 5, 6]")
-
-```
-Below is another version of the diagram.  It ties corticosteroids to inflammation A.
-
-```{r, out.width="100%", out.height="100%"}
-
-g <- graph.formula("ATB" -+ "Microbiome",
-                   "Microbiome" -+ "Activating Inflammation" -+ "IO Response",
-                   "Microbiome" -+ "Suppressing Inflammation" -+ "Activating Inflammation",
-                   "Microbiome" -+ "IO Response",
-                   "ATB" -+ "IO Response",
-                   "ATB" -+ "Activating Inflammation",
-                   "ATB" -+ "Suppressing Inflammation",
-                   "Corticosteroids" -+ "IO Response",
-                   "Corticosteroids" -+ "Microbiome",
+                   "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response",
+                   "Prostaglandin Inflammation" -+ "Microbiome" -+  "T-cell Mediated Inflammation",
                    "PPI" -+ "Microbiome",
                    "H2B" -+ "Microbiome",
-                   "NSAIDs" -+ "Microbiome",
-                   "NSAIDs" -+ "Suppressing Inflammation",
-                   "Corticosteroids" -+ "Activating Inflammation",
-                   "Corticosteroids" -+ "Suppressing Inflammation",
+                   "NSAIDs" -+ "Prostaglandin Inflammation",
+                   "Corticosteroids" -+ "T-cell Mediated Inflammation",
+                   "Corticosteroids" -+ "Prostaglandin Inflammation",
+                   "Age" -+ "Prostaglandin Inflammation",
+                   "Age" -+ "T-cell Mediated Inflammation",
+                   "Age" -+ "Microbiome",
+                   "Staging" -+ "Prostaglandin Inflammation",
+                   "ECOG" -+ "Prostaglandin Inflammation",
+                   "ECOG" -+ "T-cell Mediated Inflammation",
+                   "ECOG" -+ "Microbiome",
+                   "BMI" -+ "Prostaglandin Inflammation",
+                   "BMI" -+ "T-cell Mediated Inflammation",
+                   "BMI" -+ "Microbiome",
+                   "CCI" -+ "Corticosteroids",
+                   "CCI" -+ "H2B",
+                   "CCI" -+ "PPI",
+                   "CCI" -+ "NSAIDs",
+                   "CCI" -+ "ATB",
+                   "CCI" -+ "ECOG",
+                   "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
+                   "ICI Response" -+ "Overall Survival",
+                   
                       simplify = TRUE)
 
-E(g)$label = test.new[1:ecount(g)]
-plot(g)
 
 plot.igraph(g, size = 90)
 
 tkplot(g)
-
-
-```
-
-```{r}
-
-
-
-```
-
-```{r}
-Ref.vex <- c("Routy 2018", "gopa 2018", "Matson 2016")
-
-
-```
-
-
-```{r, out.width="100%", out.height="100%"}
-
-g <- graph.formula("ATB" -+ "Microbiome",
-                   "Microbiome" -+ "Inflammation A" -+ "IO Response",
-                   "Microbiome" -+ "Inflammation B" -+ "IO Response",
-                   "Microbiome" -+ "IO Response",
-                   "ATB" -+ "IO Response",
-                   "Corticosteroids" -+ "IO Response",
-                   "Corticosteroids" -+ "Microbiome",
-                   "PPI" -+ "Microbiome",
-                   "H2B" -+ "IO Response",
-                   "H2B" -+ "Microbiome",
-                   "NSAIDs" -+ "Microbiome",
-                   "NSAIDs" -+ "Inflammation B",
-                   "NSAIDs" -+ "IO Response",
-                   "Corticosteroids" -+ "Inflammation A",
-                      simplify = TRUE)
-
-E(g)$label = test[1:ecount(g)]
-plot(g)
-
-plot.igraph(g, size = 90)
-
-tkplot(g)
-```
-
-
-```{r}
-
-test <- 1:10
-
-```
-```{r}
-as.character(test)
-
-```
-
-```{r}
-
-test <- as.character(test)
-
-```
-
-```{r}
-
-test.new <- 1:30
-
-as.character(test.new)
-
-```
-
-```{r}
-
-Cheese <- c("[5, 4, 6]", "[2, 1, 9]")
-
-```
-
-```{r}
-
-Citations.1 <- c("[9, 12, 19, 24]", "[9]", "[1, 2, 9, 14]", "[9]", "[9, 10, 22]", "[9, 10, 22]", "[9, 10, 22]", "[3]", "[3, 15]", "[4, 25]", "[11]", "[11, 13]", "[11]", "[8, 17, 18, 24]", "[24]", "[24]", "[15]") 
-
-```
-
-
-
-
-```{r, out.width="100%", out.height="100%"}
-
-g <- graph.formula("ATB" -+ "Microbiome",
-                   "Microbiome" -+ "Activating Inflammation" -+ "IO Response",
-                   "Microbiome" -+ "Suppressing Inflammation" -+ "Activating Inflammation",
-                   "Microbiome" -+ "IO Response",
-                   "ATB" -+ "IO Response",
-                   "ATB" -+ "Activating Inflammation",
-                   "ATB" -+ "Suppressing Inflammation",
-                   "Corticosteroids" -+ "IO Response",
-                   "Corticosteroids" -+ "Microbiome",
-                   "PPI" -+ "Microbiome",
-                   "H2B" -+ "Microbiome",
-                   "NSAIDs" -+ "Microbiome",
-                   "NSAIDs" -+ "Suppressing Inflammation",
-                   "Corticosteroids" -+ "Activating Inflammation",
-                   "Corticosteroids" -+ "Suppressing Inflammation",
-                      simplify = TRUE)
-
-E(g)$label = Citations.1[1:ecount(g)]
-plot(g)
-
-plot.igraph(g, size = 90)
-
-tkplot(g)
-
-
 ```
