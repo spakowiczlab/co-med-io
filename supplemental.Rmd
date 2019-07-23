@@ -224,6 +224,13 @@ upset(gentet, main.bar.color = "darkred", mainbar.y.label = "Number of Patients"
 ```
 
 # Figure S1 causual model Mitchell Muniak
+
+```{r}
+
+letters.1 <- c(letters, "aa")
+
+```
+
 ```{r, out.width="100%", out.height="100%"}
 
 g <- graph.formula("ATB" -+ "Microbiome",
@@ -255,7 +262,7 @@ g <- graph.formula("ATB" -+ "Microbiome",
                    
                       simplify = TRUE)
 
-E(g)$label = letters[1:ecount(g)]
+E(g)$label = letters.1[1:ecount(g)]
 plot(g)
 
 plot.igraph(g, size = 90)
