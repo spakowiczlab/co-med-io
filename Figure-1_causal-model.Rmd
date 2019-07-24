@@ -7,39 +7,21 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(tidyverse)
-library(dagitty)
-library(ggdag)
-library(causaleffect)
+
 library(igraph)
-library(rgl)
-
 ```
 
 
-```{r}
-library(httr)
-
-set_config(
-
-use_proxy(url="proxy.osumc.edu", port=8080)
-
-)
-
-devtools::install_github("malcolmbarrett/ggdag")
-```
-
-Here, I am remaking the diagram post feedback.  This is figure 1 for the paper.  More edits will be made in adobe illustrator.
+This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 
 
 ```{r, out.width="100%", out.height="100%"}
 
-g <- graph.formula("ATB" -+ "Microbiome",
-                   "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response",
-                   "Prostaglandin Inflammation" -+ "Microbiome" -+  "T-cell Mediated Inflammation",
+g <- graph.formula("ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ 
+                     "ICI Response" -+ "Overall Survival",
+                   "NSAIDs" -+ "Prostaglandin Inflammation" -+ "Microbiome",
                    "PPI" -+ "Microbiome",
                    "H2B" -+ "Microbiome",
-                   "NSAIDs" -+ "Prostaglandin Inflammation",
                    "Corticosteroids" -+ "T-cell Mediated Inflammation",
                    "Corticosteroids" -+ "Prostaglandin Inflammation",
                    "Age" -+ "Prostaglandin Inflammation",
@@ -59,12 +41,18 @@ g <- graph.formula("ATB" -+ "Microbiome",
                    "CCI" -+ "ATB",
                    "CCI" -+ "ECOG",
                    "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
-                   "ICI Response" -+ "Overall Survival",
-                   
-                      simplify = TRUE)
+                   simplify = TRUE
+                   )
+
+V(g)$color <- c("#6b62b9", "lightblue", "lightblue", "lightblue", "lightblue", "#6b62b9", "lightblue", "#6b62b9", "#6b62b9", "#6b62b9", "#bb5542","#bb5542","#bb5542","#bb5542","#bb5542")
 
 
 plot.igraph(g, size = 90)
 
 tkplot(g)
+
+# check out https://stackoverflow.com/questions/16942553/a-hack-to-allow-arrows-size-in-r-igraph-to-match-edge-width for size
 ```
+
+
+
