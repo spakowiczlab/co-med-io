@@ -36,7 +36,7 @@ db <- db %>%
          steroid.28.28 = check.window(sterdays.to.start, c(-28,28)))
 ```
 
-# Survival curves: Abx and Steroid
+# A) Survival curves
 ```{r}
 sfit <- survfit(Surv(days, vitalstatus) ~ abx.28.28 + steroid.28.28, data = db)
 
@@ -55,7 +55,7 @@ comb_curv.leg
 # ggsave(print(comb_curv), filename = "../figures/Figure-3/combined-curve.png", device = "png")
 ```
 
-#Combined model
+# B) Combined model for all cancers
 ```{r}
 db <- db %>%
   mutate(Antibiotics = abx.28.28,
@@ -72,4 +72,113 @@ cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + `Stage IV
 
 ggforest(cph) 
   # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
+```
+
+# C) ggridges of distribution of lambda from lasso + # covariates chosen for by-cancer models
+
+Please try to avoid unnecessarily rerunning the followingcode, it take ~20 minutes to complete this loop.
+```{r perform percentile lasso takes a long time, eval = F}
+all.percentile.res <- list()
+canc.percentile.res <- list()
+
+box.res <- list()
+canc.box.res <- list()
+
+for(c in allcancers){
+  tmp <- db %>%
+    filter(!is.na(ECOG) & !is.na(BMI) & !is.na(`Stage IV`)) %>%
+    filter(cancer.name == c)
+  x <- tmp %>%
+    mutate(CCI = ifelse(CCI == "0-4", 0, 1),
+           Male = ifelse(Sex == "Male", 1, 0)) %>%
+    select(ATB, CS, ECOG, BMI, Age, `Stage IV`, CCI, Male) %>%
+    as.matrix()
+  
+  set.seed(112358)
+  fit <- glmnet(x, Surv(tmp$days, tmp$vitalstatus), family = "cox", maxit = 1000)
+  for(i in 1:1000){
+    try({
+    cv.fit <- cv.glmnet(x, y = Surv(tmp$days, tmp$vitalstatus), family="cox", maxit = 1000)
+    
+    Coefficients <-  coef(fit, s = cv.fit$lambda.min)
+    Active.Index <- which(Coefficients != 0)
+    
+    canc.percentile.res[[i]] <- as.data.frame(cbind(cancer = c,
+                                                    lambdahat = cv.fit$lambda.min,
+                                                    covcount = length(Active.Index),
+                                                    whichco = glue_collapse(Coefficients@Dimnames[[1]][Active.Index],
+                                                                            sep = "+")))
+    canc.box.res[[i]] <- as.data.frame(cbind(term = Coefficients@Dimnames[[1]][Active.Index], 
+                                        HR = exp(Coefficients[Active.Index]),
+                                        cancer = c))
+    })
+  }
+  
+  all.percentile.res[[c]] <- bind_rows(canc.percentile.res)
+  canc.percentile.res <- list()
+  
+  box.res[[c]] <- bind_rows(canc.box.res)
+  canc.box.res <- list()
+}
+
+lassores <- bind_rows(all.percentile.res)
+lassores$lambdahat <- as.numeric(lassores$lambdahat)
+lassores$covcount <- as.factor(lassores$covcount)
+
+# saveRDS(lassores, "../data/generated/fig4_percentile-lasso.RDS")
+# saveRDS(box.res, "../data/generated/fig4-sup_percent-appearance-and-hr_boxplots")
+```
+
+```{r}
+# lassores <- readRDS("../data/generated/fig4_percentile-lasso.RDS")
+```
+
+```{r}
+lasso95 <- list()
+for(c in allcancers){
+  lasso95[[c]] <- lassores %>%
+  filter(cancer == c) %>%
+  arrange(lambdahat)
+  lasso95[[c]] <- lasso95[[c]][950,]
+}
+lasso95 <- bind_rows(lasso95) %>%
+  arrange(cancer)
+lasso95$numcov <- as.numeric(as.character(lasso95$covcount))
+
+mypal <- brewer.pal(7, "Dark2")
+
+ggplot(lassores, aes(x = lambdahat, y = covcount, fill = cancer)) +
+  geom_density_ridges(aes(point_color= cancer, point_alpha = .2), jittered_points = TRUE, alpha = .4, scale = 1, position = position_points_jitter()) +
+  scale_color_manual(aesthetics = c("fill", "point_color"), breaks = c("Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Other", "Renal Cell Carcinoma", "Sarcoma"), values = mypal, name = "Cancer") +
+  labs(x = expression(hat(lambda)), y = "Number of covariates") + 
+  geom_segment(x = lasso95[1,2], xend = lasso95[1,2],
+               y = lasso95[1,5]+1, yend = lasso95[1,5] + 2,
+               colour = mypal[1],
+               size = 1) +
+  geom_segment(x = lasso95[2,2], xend = lasso95[2,2],
+               y = lasso95[2,5]+1, yend = lasso95[2,5] + 2,
+               colour = mypal[2],
+               size = 1) +
+  geom_segment(x = lasso95[3,2], xend = lasso95[3,2],
+               y = lasso95[3,5]+1, yend = lasso95[3,5] + 2,
+               colour = mypal[3],
+               size = 1) +
+  geom_segment(x = lasso95[4,2], xend = lasso95[4,2],
+               y = lasso95[4,5]+1, yend = lasso95[4,5] + 2,
+               colour = mypal[4],
+               size = 1) +
+  geom_segment(x = lasso95[5,2], xend = lasso95[5,2],
+               y = lasso95[5,5]+1, yend = lasso95[5,5] + 2,
+               colour = mypal[5],
+               size = 1) +
+  geom_segment(x = lasso95[6,2], xend = lasso95[6,2],
+               y = lasso95[6,5]+1, yend = lasso95[6,5] + 2,
+               colour = mypal[6],
+               size = 1) +
+  geom_segment(x = lasso95[7,2], xend = lasso95[7,2],
+               y = lasso95[7,5]+1, yend = lasso95[7,5] + 2,
+               colour = mypal[7],
+               size = 1) +
+  theme_ridges() 
+  #ggsave("../figures/Figure-4/ggrideges.png", width = 8)
 ```
