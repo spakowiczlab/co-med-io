@@ -58,9 +58,8 @@ coxdf <-
          Cancer = cancer.name, 
          Sex = sex,
          `ATB within 28 days of ICI` = abx.28.28,
-         `CS within 28 days of ICI` = steroid.28.28, 
-         CCI = ifelse(comorb.score == 0, "0", 
-                                                ifelse(comorb.score < 3, "1-2", ">=3")))
+         `CS within 28 days of ICI` = steroid.28.28,
+         `CCI` = ifelse(comorb.score < 5, "0-4", "5+"))
 
 coxdf$Immunotherapy <- fct_relevel(coxdf$Immunotherapy, "Atezolizumab", "Durvalumab", "Durvalumab + Tremelimumab", "Ipilimumab", "Nivolumab", "Nivolumab + Ipilimumab", "Nivolumab + Chemotherapy", "Pembrolizumab", "Tremelimumab", "Other")
 
