@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(igraph)
+
 ```
 
 
@@ -17,60 +18,35 @@ This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 
 ```{r, out.width="100%", out.height="100%"}
 
-g <- graph.formula("ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ 
-                     "ICI Response" -+ "Overall Survival",
-                   "NSAIDs" -+ "Prostaglandin Inflammation" -+ "Microbiome",
-                   "PPI" -+ "Microbiome",
-                   "H2B" -+ "Microbiome",
+
+g <- graph.formula("CCI" -+ "ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+                                "ICI Response" -+ "Overall Survival",
+                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ "Microbiome" -+                       "T-cell Mediated Inflammation",
+                   "CCI" -+ "PPI" -+ "Microbiome",
+                   "CCI" -+ "H2B" -+ "Microbiome",
+                   "CCI" -+ "NSAIDs" -+ "Prostaglandin Inflammation",
                    "Corticosteroids" -+ "T-cell Mediated Inflammation",
-                   "Corticosteroids" -+ "Prostaglandin Inflammation",
-                   "Age" -+ "Prostaglandin Inflammation",
+                   "Age" -+ "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
                    "Age" -+ "T-cell Mediated Inflammation",
-                   "Age" -+ "Microbiome",
                    "Staging" -+ "Prostaglandin Inflammation",
-                   "ECOG" -+ "Prostaglandin Inflammation",
+                   "Age" -+ "ECOG" -+ "Prostaglandin Inflammation",
+                   "CCI" -+ "ECOG" -+ "BMI" -+ "Prostaglandin Inflammation",
                    "ECOG" -+ "T-cell Mediated Inflammation",
-                   "ECOG" -+ "Microbiome",
-                   "BMI" -+ "Prostaglandin Inflammation",
-                   "BMI" -+ "T-cell Mediated Inflammation",
-                   "BMI" -+ "Microbiome",
-                   "CCI" -+ "Corticosteroids",
-                   "CCI" -+ "H2B",
-                   "CCI" -+ "PPI",
-                   "CCI" -+ "NSAIDs",
-                   "CCI" -+ "ATB",
-                   "CCI" -+ "ECOG",
-                   "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
-                   "ECOG" -+ "BMI",
                    simplify = TRUE
                    )
-V(g)$color <- c("#81d5dd", "#b8d8a7", "#b8d8a7", "#e5bb99", "#e5bb99", "#81d5dd", "#b8d8a7", "#81d5dd", "#81d5dd", "#81d5dd", "#cfb4de","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
+V(g)$color <- c("#cfb4de", "#77d1e5", "#aadab4", "#aadab4", "#e2bf99", "#e2bf99", "#77d1e5", "#aadab4", "#77d1e5", "#77d1e5", "#77d1e5","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
+edge.widths <- c(1,1,1,1,1,1,5,5,5,5,1,5,1,5,1,1,1,1,1,1,1,1,1,1,1)
 
 
-plot.igraph(g, vertex.label.color = "black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5)
-
-# check out https://stackoverflow.com/questions/16942553/a-hack-to-allow-arrows-size-in-r-igraph-to-match-edge-width for size
+plot.igraph(g, vertex.label.color="black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5, edge.width = edge.widths)
 ```
+This is figS1 for the paper.
 
 ```{r}
+E(g)$label = letters[1:ecount(g)]
+plot(g)
+layout.circle(g)
+tkplot(g, vertex.label.color="black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5, edge.width = edge.widths, edge.label.color="black", layout=layout.circle, size=300)
 
-
-tkplot(g, vertex.label.color = "black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5)
-
-# check out https://stackoverflow.com/questions/16942553/a-hack-to-allow-arrows-size-in-r-igraph-to-match-edge-width for size
-        
-```
-
-```{r}
-edge.widths <- c(1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,1,20)
-
-tkplot(g, edge.width = edge.widths)
-
-
-x <- ends(g, E(g))
-
-
-?V
 
 ```
 
