@@ -1,5 +1,5 @@
 ---
-title: "Background Diagram"
+title: "Fig1-S1_causal-model"
 author: "Mitchell Muniak"
 date: "5/23/2019"
 output: html_document
@@ -41,18 +41,36 @@ g <- graph.formula("ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+
                    "CCI" -+ "ATB",
                    "CCI" -+ "ECOG",
                    "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
+                   "ECOG" -+ "BMI",
                    simplify = TRUE
                    )
+V(g)$color <- c("#81d5dd", "#b8d8a7", "#b8d8a7", "#e5bb99", "#e5bb99", "#81d5dd", "#b8d8a7", "#81d5dd", "#81d5dd", "#81d5dd", "#cfb4de","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
 
-V(g)$color <- c("#6b62b9", "lightblue", "lightblue", "lightblue", "lightblue", "#6b62b9", "lightblue", "#6b62b9", "#6b62b9", "#6b62b9", "#bb5542","#bb5542","#bb5542","#bb5542","#bb5542")
 
-
-plot.igraph(g, size = 90)
-
-tkplot(g)
+plot.igraph(g, vertex.label.color = "black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5)
 
 # check out https://stackoverflow.com/questions/16942553/a-hack-to-allow-arrows-size-in-r-igraph-to-match-edge-width for size
 ```
 
+```{r}
 
+
+tkplot(g, vertex.label.color = "black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5)
+
+# check out https://stackoverflow.com/questions/16942553/a-hack-to-allow-arrows-size-in-r-igraph-to-match-edge-width for size
+        
+```
+
+```{r}
+edge.widths <- c(1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,1,20)
+
+tkplot(g, edge.width = edge.widths)
+
+
+x <- ends(g, E(g))
+
+
+?V
+
+```
 
