@@ -1,6 +1,6 @@
 ---
 title: "Fig1-S1_causal-model"
-author: "Mitchell Muniak"
+author: "Mitchell Muniak, Daniel Spakowicz"
 date: "5/23/2019"
 output: html_document
 ---
@@ -17,60 +17,56 @@ This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 
 ```{r, out.width="100%", out.height="100%"}
 
-g <- graph.formula("ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ 
-                     "ICI Response" -+ "Overall Survival",
-                   "NSAIDs" -+ "Prostaglandin Inflammation" -+ "Microbiome",
-                   "PPI" -+ "Microbiome",
-                   "H2B" -+ "Microbiome",
+g <- graph.formula("CCI" -+ "ATB" -+ "Microbiome" -+ 
+                     "T-cell Mediated Inflammation" -+ "ICI Response" -+ 
+                     "Overall Survival",
+                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ 
+                     "T-cell Mediated Inflammation",
+                   "CCI" -+ "NSAIDs" -+ "Prostaglandin Inflammation" -+ "Microbiome",
+                   "CCI" -+ "PPI" -+ "Microbiome",
+                   "CCI" -+ "H2B" -+ "Microbiome",
                    "Corticosteroids" -+ "T-cell Mediated Inflammation",
-                   "Corticosteroids" -+ "Prostaglandin Inflammation",
                    "Age" -+ "Prostaglandin Inflammation",
                    "Age" -+ "T-cell Mediated Inflammation",
                    "Age" -+ "Microbiome",
                    "Staging" -+ "Prostaglandin Inflammation",
-                   "ECOG" -+ "Prostaglandin Inflammation",
+                   "CCI" -+ "ECOG" -+ "Prostaglandin Inflammation",
                    "ECOG" -+ "T-cell Mediated Inflammation",
-                   "ECOG" -+ "Microbiome",
-                   "BMI" -+ "Prostaglandin Inflammation",
+                   "ECOG" -+ "BMI" -+ "Prostaglandin Inflammation",
                    "BMI" -+ "T-cell Mediated Inflammation",
                    "BMI" -+ "Microbiome",
-                   "CCI" -+ "Corticosteroids",
-                   "CCI" -+ "H2B",
-                   "CCI" -+ "PPI",
-                   "CCI" -+ "NSAIDs",
-                   "CCI" -+ "ATB",
-                   "CCI" -+ "ECOG",
-                   "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
-                   "ECOG" -+ "BMI",
                    simplify = TRUE
                    )
-V(g)$color <- c("#81d5dd", "#b8d8a7", "#b8d8a7", "#e5bb99", "#e5bb99", "#81d5dd", "#b8d8a7", "#81d5dd", "#81d5dd", "#81d5dd", "#cfb4de","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
 
+# Set colors by categories -- medications, clinical variables, mediators of 
+# response and outcomes
+V(g)$color <- c("#81d5dd", "#b8d8a7", "#b8d8a7", "#e5bb99", "#e5bb99", 
+                "#81d5dd", "#b8d8a7", "#81d5dd", "#81d5dd", "#81d5dd", 
+                "#cfb4de","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
 
-plot.igraph(g, vertex.label.color = "black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5)
+# Add edge labels for citing references
+edge_attr(g) <- list(name = letters[1:length(E(g)])
 
-# check out https://stackoverflow.com/questions/16942553/a-hack-to-allow-arrows-size-in-r-igraph-to-match-edge-width for size
+# Create figure Supplemental-1
+plot.igraph(g, 
+            vertex.label.color = "black", 
+            vertex.size = 20, 
+            edge.arrow.size = 0.5, 
+            edge.arrow.width = 0.5,
+            edge.label)
+
 ```
 
 ```{r}
+# Modify edge widths to define our hypothesized primary pathway
+sizes <- ends(g, E(g))
+sizes$edge.widths <- c(1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,1,7)
+sizes$arrow.sizes <- c(1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,1,7)
 
-
-tkplot(g, vertex.label.color = "black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5)
-
-# check out https://stackoverflow.com/questions/16942553/a-hack-to-allow-arrows-size-in-r-igraph-to-match-edge-width for size
-        
+# Create Figure 1, to be manipulated in Adobe Illustrator
+tkplot(g, vertex.label.color = "black", 
+       vertex.size = 20, 
+       edge.width = sizes$edge.widths,
+       edge.arrow.size = sizes$arrow.sizes, 
+       edge.arrow.width = sizes$.arrow.sizes)
 ```
-
-```{r}
-edge.widths <- c(1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,1,20)
-
-tkplot(g, edge.width = edge.widths)
-
-
-x <- ends(g, E(g))
-
-
-?V
-
-```
-
