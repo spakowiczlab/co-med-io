@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 title: "Fig1-S1_causal-model"
 author: "Mitchell Muniak"
@@ -20,8 +19,10 @@ This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 ```{r, out.width="100%", out.height="100%"}
 
 
-g <- graph.formula("CCI" -+ "ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+                                "ICI Response" -+ "Overall Survival",
-                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ "Microbiome" -+                       "T-cell Mediated Inflammation",
+g <- graph.formula("CCI" -+ "ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response" -+
+                     "Overall Survival",
+                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ "Microbiome" -+
+                     "T-cell Mediated Inflammation",
                    "CCI" -+ "PPI" -+ "Microbiome",
                    "CCI" -+ "H2B" -+ "Microbiome",
                    "CCI" -+ "NSAIDs" -+ "Prostaglandin Inflammation",
@@ -34,94 +35,51 @@ g <- graph.formula("CCI" -+ "ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammati
                    "ECOG" -+ "T-cell Mediated Inflammation",
                    simplify = TRUE
                    )
-V(g)$color <- c("#cfb4de", "#77d1e5", "#aadab4", "#aadab4", "#e2bf99", "#e2bf99", "#77d1e5", "#aadab4", "#77d1e5", "#77d1e5", "#77d1e5","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
-edge.widths <- c(1,1,1,1,1,1,5,5,5,5,1,5,1,5,1,1,1,1,1,1,1,1,1,1,1)
-
-
-plot.igraph(g, vertex.label.color="black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5, edge.width = edge.widths)
-```
-This is figS1 for the paper.
-
-```{r}
-E(g)$label = letters[1:ecount(g)]
-plot(g)
-layout.circle(g)
-tkplot(g, vertex.label.color="black", vertex.size=20, edge.arrow.size=0.5, edge.arrow.width=0.5, edge.width = edge.widths, edge.label.color="black", layout=layout.circle, size=300)
-
-
-```
-
-=======
----
-title: "Fig1-S1_causal-model"
-author: "Mitchell Muniak, Daniel Spakowicz"
-date: "5/23/2019"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-library(igraph)
-```
-
-
-This is figure 1 for the paper.  More edits will be made in adobe illustrator.
-
-
-```{r, out.width="100%", out.height="100%"}
-
-g <- graph.formula("CCI" -+ "ATB" -+ "Microbiome" -+ 
-                     "T-cell Mediated Inflammation" -+ "ICI Response" -+ 
-                     "Overall Survival",
-                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ 
-                     "T-cell Mediated Inflammation",
-                   "CCI" -+ "NSAIDs" -+ "Prostaglandin Inflammation" -+ "Microbiome",
-                   "CCI" -+ "PPI" -+ "Microbiome",
-                   "CCI" -+ "H2B" -+ "Microbiome",
-                   "Corticosteroids" -+ "T-cell Mediated Inflammation",
-                   "Age" -+ "Prostaglandin Inflammation",
-                   "Age" -+ "T-cell Mediated Inflammation",
-                   "Age" -+ "Microbiome",
-                   "Staging" -+ "Prostaglandin Inflammation",
-                   "CCI" -+ "ECOG" -+ "Prostaglandin Inflammation",
-                   "ECOG" -+ "T-cell Mediated Inflammation",
-                   "ECOG" -+ "BMI" -+ "Prostaglandin Inflammation",
-                   "BMI" -+ "T-cell Mediated Inflammation",
-                   "BMI" -+ "Microbiome",
-                   simplify = TRUE
-                   )
 
 # Set colors by categories -- medications, clinical variables, mediators of 
 # response and outcomes
-V(g)$color <- c("#81d5dd", "#b8d8a7", "#b8d8a7", "#e5bb99", "#e5bb99", 
-                "#81d5dd", "#b8d8a7", "#81d5dd", "#81d5dd", "#81d5dd", 
-                "#cfb4de","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
+V(g)$color <- c("#cfb4de", "#77d1e5", "#aadab4", "#aadab4", "#e2bf99", 
+                "#e2bf99", "#77d1e5", "#aadab4", "#77d1e5", "#77d1e5",
+                "#77d1e5","#cfb4de","#cfb4de","#cfb4de","#cfb4de")
 
-# Add edge labels for citing references
-edge_attr(g) <- list(name = letters[1:length(E(g)])
 
-# Create figure Supplemental-1
-plot.igraph(g, 
-            vertex.label.color = "black", 
-            vertex.size = 20, 
-            edge.arrow.size = 0.5, 
-            edge.arrow.width = 0.5,
-            edge.label)
-
-```
-
-```{r}
 # Modify edge widths to define our hypothesized primary pathway
-sizes <- ends(g, E(g))
-sizes$edge.widths <- c(1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,1,7)
-sizes$arrow.sizes <- c(1,1,1,1,1,1,1,1,7,7,1,1,1,1,1,1,1,1,1,7)
+edge.arrow.sizes <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1,
+                     1, 1, 0.5, 1, 0.5, 1, 0.5, 0.5, 0.5,
+                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+edge.arrow.widths <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1,
+                      1, 1, 0.5, 1, 0.5, 1, 0.5, 0.5, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+edge.widths <- c(1, 1, 1, 1, 1, 1, 5, 5,
+                 5, 5, 1, 5, 1, 5, 1, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
 # Create Figure 1, to be manipulated in Adobe Illustrator
-tkplot(g, vertex.label.color = "black", 
-       vertex.size = 20, 
-       edge.width = sizes$edge.widths,
-       edge.arrow.size = sizes$arrow.sizes, 
-       edge.arrow.width = sizes$.arrow.sizes)
+tkplot(g, 
+      vertex.label.color="black",
+      vertex.size = 20,
+      edge.arrow.size = edge.arrow.sizes,
+      edge.arrow.width = edge.arrow.widths,
+      edge.width = edge.widths,
+      layout = layout.circle
+      )
 ```
->>>>>>> ff3433cf331ea77b2945539edce0f34afd33476b
+This is figS1 for the paper. More edits will be made in adobe illustrator.
+
+```{r}
+# Add edge labels for citing references
+E(g)$label = letters[1:ecount(g)]
+
+# Create figure Supplemental-1, to be manipulated in Adobe Illustrator
+tkplot(g,
+       vertex.label.color = "black",
+       edge.label.color = "black",
+       vertex.size=20,
+       edge.arrow.size = edge.arrow.sizes,
+       edge.arrow.width = edge.arrow.widths,
+       edge.width = edge.widths,
+       layout=layout.circle
+       )
+
+
+```
