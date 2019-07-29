@@ -74,7 +74,8 @@ ggforest(cph)
   # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
 ```
 
-# C) ggridges of distribution of lambda from lasso + # covariates chosen for by-cancer models
+
+# Loop performing percentile lasso to generate data for remaining panels
 
 Please try to avoid unnecessarily rerunning the followingcode, it take ~20 minutes to complete this loop.
 ```{r perform percentile lasso takes a long time, eval = F}
@@ -131,110 +132,57 @@ lassores$covcount <- as.factor(lassores$covcount)
 
 ```{r}
 # lassores <- readRDS("../data/generated/fig4_percentile-lasso.RDS")
+# box.res <- readRDS("../data/generated/fig4-sup_percent-appearance-and-hr_boxplots.RDS")
 ```
 
 ```{r}
-lasso95 <- list()
-for(c in allcancers){
-  lasso95[[c]] <- lassores %>%
-  filter(cancer == c) %>%
-  arrange(lambdahat)
-  lasso95[[c]] <- lasso95[[c]][950,]
-}
-lasso95 <- bind_rows(lasso95) %>%
-  arrange(cancer)
-lasso95$numcov <- as.numeric(as.character(lasso95$covcount))
-
-mypal <- brewer.pal(7, "Dark2")
-
-ggplot(lassores, aes(x = lambdahat, y = covcount, fill = cancer)) +
-  geom_density_ridges(aes(point_color= cancer, point_alpha = .2), jittered_points = TRUE, alpha = .4, scale = 1, position = position_points_jitter()) +
-  scale_color_manual(aesthetics = c("fill", "point_color"), breaks = c("Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Other", "Renal Cell Carcinoma", "Sarcoma"), values = mypal, name = "Cancer") +
-  labs(x = expression(hat(lambda)), y = "Number of covariates") + 
-  geom_segment(x = lasso95[1,2], xend = lasso95[1,2],
-               y = lasso95[1,5]+1, yend = lasso95[1,5] + 2,
-               colour = mypal[1],
-               size = 1) +
-  geom_segment(x = lasso95[2,2], xend = lasso95[2,2],
-               y = lasso95[2,5]+1, yend = lasso95[2,5] + 2,
-               colour = mypal[2],
-               size = 1) +
-  geom_segment(x = lasso95[3,2], xend = lasso95[3,2],
-               y = lasso95[3,5]+1, yend = lasso95[3,5] + 2,
-               colour = mypal[3],
-               size = 1) +
-  geom_segment(x = lasso95[4,2], xend = lasso95[4,2],
-               y = lasso95[4,5]+1, yend = lasso95[4,5] + 2,
-               colour = mypal[4],
-               size = 1) +
-  geom_segment(x = lasso95[5,2], xend = lasso95[5,2],
-               y = lasso95[5,5]+1, yend = lasso95[5,5] + 2,
-               colour = mypal[5],
-               size = 1) +
-  geom_segment(x = lasso95[6,2], xend = lasso95[6,2],
-               y = lasso95[6,5]+1, yend = lasso95[6,5] + 2,
-               colour = mypal[6],
-               size = 1) +
-  geom_segment(x = lasso95[7,2], xend = lasso95[7,2],
-               y = lasso95[7,5]+1, yend = lasso95[7,5] + 2,
-               colour = mypal[7],
-               size = 1) +
-  theme_ridges() 
-  #ggsave("../figures/Figure-4/ggrideges.png", width = 8)
+box.res <- bind_rows(box.res)
 ```
 
-# D) ggforest maybe
+# C) Boxplots of HR results from lasso
 
 ```{r}
-lasso95$whichco <- gsub("Stage IV", "`Stage IV`", lasso95$whichco)
-lasso95$whichco <- gsub("Male", "Sex", lasso95$whichco)
-```
+box.res$HR <- as.numeric(box.res$HR)
 
-```{r}
-mods <- list()
-
-for(i in 1:length(allcancers)){
-  c <- as.character(lasso95[i,1])
-  tmp <- db %>%
-    filter(cancer.name == c)
-
-  f <- as.formula(paste("Surv(days, vitalstatus) ~", lasso95[i,4]))
-  if(lasso95[i,3] != 0){
-    mods[[c]] <- coxph(f, data = tmp2) %>%
-      tidy() %>%
-      mutate(estimate = exp(estimate),
-             conf.low = exp(conf.low),
-             conf.high = exp(conf.high),
-             cancer = c)
-  } 
-}
-
-mods <- bind_rows(mods)
-```
-
-
-```{r}
-names(mypal) <- c("Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Other", "Renal Cell Carcinoma", "Sarcoma")
-mods <- mods %>%
-  filter(conf.high < Inf)
-mods$term <- gsub("SexMale", "Sex", mods$term)
-
-ggplot(data=mods, aes(x = cancer,y = estimate, ymin = conf.low, ymax = conf.high ))+
-  geom_pointrange(aes(color = cancer)) +
-  geom_hline(aes(fill = cancer), yintercept = 1, linetype =2 )+
-  labs(x = "", y= "") +
-  geom_errorbar(aes(ymin = conf.low, ymax = conf.high, color = cancer)) + 
-  scale_color_manual(breaks = c("Bladder Cancer", "Head and Neck Carcinoma", "Melanoma", "Non-Small Cell Lung Cancer", "Other", "Renal Cell Carcinoma", "Sarcoma"), values = mypal, name = "Cancer") +
-  facet_wrap(~term, strip.position = "left", nrow = 7, scales = "free_y") +
+box.res  %>%
+  filter(!is.na(term)) %>%
+  mutate(cancer = ifelse(cancer == "Head and Neck Carcinoma", "Head and Neck \nCarcinoma", 
+                         ifelse(cancer == "Non-Small Cell Lung Cancer", "Non-Small Cell \nLung Cancer", 
+                                ifelse(cancer == "Renal Cell Carcinoma", "Renal Cell \nCarcinoma", cancer)))) %>%
+  ggplot(aes(x = term, y = HR, fill = term)) +
+  facet_wrap(vars(cancer), strip.position = "left", scales = "free", nrow = 9) + 
+  geom_boxplot(alpha = .4) +
+  geom_point(aes(color = term)) +
+  geom_hline(aes(fill = term), yintercept = 1, linetype =2)+
+  scale_color_brewer(aesthetics = c("color", "fill"), palette = "Dark2") +
   theme_bw() +
-  theme(plot.title=element_text(size=16,face="bold"),
+  theme(plot.title=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
         axis.text.x=element_text(face="bold"),
-        axis.title=element_text(size=12,face="bold"),
-        strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold"),
-        legend.position = "none")+
+        axis.title=element_blank(),
+        strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold", size = 12)) +
   coord_flip() 
-  #ggsave("../figures/Figure-4/forest_split-cancers.png")
+```
 
+
+# D) Barplots of how frequently models selecting given covariates were chosen
+
+```{r}
+box.res %>%
+  filter(!is.na(term)) %>%
+  ggplot(aes(x = term, fill = term)) + 
+  geom_bar() +
+  facet_wrap(vars(cancer), scales = "free", strip.position = "left",nrow = 9) +
+  scale_color_brewer(aesthetics = c("color", "fill"), palette = "Dark2", name = "Covariate") +
+  labs(x = "", y = "") +
+  theme_bw() +
+  theme(plot.title=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x=element_text(face="bold"),
+        axis.title=element_blank(),
+        strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")) +
+  coord_flip()+
+  guides(fill = guide_legend(reverse = TRUE)) 
 ```
