@@ -3,7 +3,7 @@ output:
   html_document: default
   pdf_document: default
   word_document: default
-title: Concomitant medications affect overall survival in cancer patients undergoing immunotherapy
+title: Table 1. Cohort characteristics
 ---
 
 ```{r setup, include=FALSE}
