@@ -40,13 +40,13 @@ db <- db %>%
 ```{r}
 sfit <- survfit(Surv(days, vitalstatus) ~ abx.28.28 + steroid.28.28, data = db)
 
-comb_curv <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, ylab = "", legend = "none", legend.title = "", legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", "ATB=1,Steroids=0", "ATB,Steroids = 1"), font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08))
+comb_curv <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, ylab = "", legend = "none", legend.title = "", legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", "ATB=1,Steroids=0", "ATB,Steroids = 1"), font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08), palette = "Dark2")
 
 comb_curv
 ```
 
 ```{r}
-comb_curv.leg <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, legend = "right", legend.title = "", legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", "ATB=1,Steroids=0", "ATB,Steroids = 1"), font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08))
+comb_curv.leg <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, legend = "right", legend.title = "", legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", "ATB=1,Steroids=0", "ATB,Steroids = 1"), font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08), palette = "Dark2")
 
 comb_curv.leg
 ```
@@ -64,11 +64,9 @@ db <- db %>%
          BMI = bmi.calc,
          Sex = sex,
          Age = age,
-         `Stage IV` = ifelse(staging == 4, 1, 0),
-         CCI = ifelse(comorb.score == 0, 1, ifelse(comorb.score < 3, 2, 3))
-         )
+         `Stage IV` = ifelse(staging == 4, 1, 0))
 
-cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + `Stage IV`+ CCI + BMI + Sex + Age, data = db)
+cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + `Stage IV` + BMI + Sex + Age, data = db)
 
 ggforest(cph) 
   # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
@@ -90,9 +88,8 @@ for(c in allcancers){
     filter(!is.na(ECOG) & !is.na(BMI) & !is.na(`Stage IV`)) %>%
     filter(cancer.name == c)
   x <- tmp %>%
-    mutate(CCI = ifelse(CCI == "0-4", 0, 1),
-           Male = ifelse(Sex == "Male", 1, 0)) %>%
-    select(ATB, CS, ECOG, BMI, Age, `Stage IV`, CCI, Male) %>%
+    mutate(Male = ifelse(Sex == "Male", 1, 0)) %>%
+    select(ATB, CS, ECOG, BMI, Age, `Stage IV`, Male) %>%
     as.matrix()
   
   set.seed(112358)
