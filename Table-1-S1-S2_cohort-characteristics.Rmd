@@ -100,8 +100,10 @@ table1
 ### ATB
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG",  "Cancer", "Staging", "Immunotherapy", "ATB within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging", "ATB within 28 days of ICI", "CS within 28 days of ICI")
+listVars <- c("BMI", "Age", "Sex", "ECOG",  "Cancer", "Staging", "Immunotherapy",
+              "ATB within 28 days of ICI", "CS within 28 days of ICI")
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging", 
+             "ATB within 28 days of ICI", "CS within 28 days of ICI")
 table.S1 <- CreateTableOne(vars = listVars,
                            strata = "ATB within 28 days of ICI",
                            data = coxdf,
@@ -128,6 +130,7 @@ table.S2 <- CreateTableOne(vars = listVars,
                            argsNonNormal = listVars,
                            argsNormal = list(NULL)
 )
+
 table.S2
 ```
 
