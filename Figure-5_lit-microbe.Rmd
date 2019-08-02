@@ -225,7 +225,7 @@ fisher.test(y)
 
 Metronidazole
 ```{r}
-x <- c(4,2,5,7)
+x <- c(1,5,8,4)
 y <- matrix(x, ncol = 2)
 fisher.test(y)
 ```
