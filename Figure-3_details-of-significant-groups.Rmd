@@ -30,7 +30,8 @@ sterkey <- sterkey[!duplicated(sterkey),]
 ```
 
 ```{r}
-abxclasses <- c("BetaLactam", "Macrolide",  "Other.Antibacterial", "Fluoroquinolone", "Tetracycline", "Vancomycin", "Sulfamethoxazole", "Clindamycin", "Metronidazole")
+abxclasses <- c("BetaLactam", "Macrolide",  "Other.Antibacterial", "Fluoroquinolone", "Tetracycline",
+                "Vancomycin", "Sulfamethoxazole", "Clindamycin", "Metronidazole")
 
 orgtype <- c("Antibacterial", "Antiviral", "Antifungal")
 
@@ -203,8 +204,6 @@ hrbycancorg <- list()
 labcolbac <- list()
 labcolorg <- list()
 
-patientsbycanc <- list()
-patients <- list()
 
 g <- as.formula(paste("Surv(days, vitalstatus) ~ ", glue_collapse(abxclasses, sep = " + "), sep = ""))
 h <- as.formula(paste("Surv(days, vitalstatus) ~ ", glue_collapse(orgtype, sep = " + "), sep = ""))
@@ -223,18 +222,6 @@ for(c in allcancers){
     hrbycancorg[[c]] <- round(y[,2], 2)
     labcolorg[[c]] <- ifelse(y[,2] < 1, "red", "black")
     pvalbycancorg[[c]] <- y[,5]
-    
-  for(s in statesofinterest){
-    n1 <- sum(tmp[,s], na.rm = TRUE)
-    n0 <- tmp[tmp[s] == 0,]
-    n0 <- length(n0$days)
-    f <- as.formula(paste("Surv(days, vitalstatus) ~ ", s, sep = ""))
-    patients[[s]] <- paste(n0, n1, sep = ", ")
-    
-  }
-  patientsbycanc[[c]] <- patients
-
-  patients <- list()
   
 }
 
@@ -248,8 +235,6 @@ perclasscancpvals <- bind_rows(pvalbycancbac) %>%
   as.data.frame()
 colnames(perclasscancpvals) <- names(pvalbycancbac$Other)
 
-patientsbycanc <- bind_rows(patientsbycanc)
-rownames(patientsbycanc) <- names(pvalbycancbac)
 
 labcolbac <- bind_rows(labcolbac) %>%
   t() %>%
@@ -261,29 +246,10 @@ labcolorg <- bind_rows(labcolorg) %>%
   as.data.frame()
 colnames(labcolorg) <- names(hrbycancorg$Other)
 
-stickersbycancbac <- lapply(hrbycancbac, function(x) lapply(x, function(y) ifelse(y > 10, ">10", y)))
-stickersbycancbac <- lapply(stickersbycancbac, function(x) lapply(x, function(y) as.character(y)))
-stickersbycancbac <- bind_rows(stickersbycancbac)
-rownames(stickersbycancbac) <- names(hrbycancbac)
-
-stickersbycancorg <- lapply(hrbycancorg, function(x) lapply(x, function(y) ifelse(y > 10, ">10", y)))
-stickersbycancorg <- lapply(stickersbycancorg, function(x) lapply(x, function(y) as.character(y)))
-stickersbycancorg <- bind_rows(stickersbycancorg)
-rownames(stickersbycancorg) <- names(hrbycancorg)
-
 ```
 
 Code manipulating data into long format for the creation of figures, and saving a data frame object that will be used for the heatmap.
 ```{r}
-perclasspat <- patientsbycanc %>%
-  select(-Antifungal, -Antiviral, -Antibacterial) %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "AbxClass", value = "ns", -cancer)
-
-perorgpats <- patientsbycanc %>%
-  select(Antifungal, Antiviral, Antibacterial) %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "AbxClass", value = "ns", -cancer)
 
 labcolorg <- labcolorg %>%
   rownames_to_column(var = "cancer") %>%
@@ -295,28 +261,14 @@ labcolbac <- labcolbac %>%
   gather(key = "AbxClass", value = "labcol", -cancer) %>%
   mutate(labcol = ifelse(is.na(labcol), "black", labcol))
 
-stickersbycancbac <- stickersbycancbac %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "AbxClass", value = "hazrat", -cancer) %>%
-  full_join(perclasspat) %>%
-  mutate(labtext = paste(ns, hazrat, sep = "\n"))
-
-stickersbycancorg <- stickersbycancorg %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "AbxClass", value = "hazrat", -cancer) %>%
-  full_join(perorgpats) %>%
-  mutate(labtext = paste(ns, hazrat, sep = "\n"))
-
 heatorg <- as.data.frame(perorgcancpvals)  %>%
   rownames_to_column(var = "cancer") %>%
   gather(key = "AbxClass", value = "p.value", -cancer) %>%
-  full_join(stickersbycancorg) %>%
   full_join(labcolorg)
 
 heatclass <- as.data.frame(perclasscancpvals)  %>%
   rownames_to_column(var = "cancer") %>%
   gather(key = "AbxClass", value = "p.value", -cancer) %>%
-  full_join(stickersbycancbac) %>%
   full_join(labcolbac)
 
 heatclass <- bind_rows(heatorg, heatclass)
@@ -337,10 +289,8 @@ colnames(albac.dat) <- c("hazrat", "p.value")
 albac.dat <- albac.dat %>%
   rownames_to_column(var = "AbxClass") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
-         cancer = "All",
-         ns = "", 
-         labtext = "") %>%
-  select(cancer, AbxClass, p.value, hazrat, ns,labtext, labcol)
+         cancer = "All") %>%
+  select(cancer, AbxClass, p.value, hazrat, labcol)
 ```
 
 
@@ -349,6 +299,7 @@ Save data from all meds:
 sfits <- list()
 db <- db %>%
   mutate(abx.28.28 = check.window(paste(",", abxdays.to.iostart, ",", sep = ""), c(-28,28)))
+
 for(c in allcancers){
   tmp <- db %>%
     filter(cancer.name == c)
@@ -375,10 +326,8 @@ alcancbac.dat <- alcancbac.dat %>%
   as.data.frame() %>%
   rownames_to_column(var = "cancer") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
-         AbxClass = "All",
-         ns = "", 
-         labtext = "") %>%
-  select(cancer, AbxClass, p.value, hazrat, ns,labtext, labcol)
+         AbxClass = "All") %>%
+  select(cancer, AbxClass, p.value, hazrat, labcol)
   
 ```
 
@@ -389,8 +338,7 @@ sfit <- survfit(Surv(days, vitalstatus) ~ abx.28.28, data = db)
 allallbac <- as.data.frame(cbind(AbxClass = "All", cancer = "All", 
                                  p.value = surv_pvalue(sfit)[1,2], 
                                  hazrat = coefficients(summary(coxph(Surv(days, vitalstatus) ~ abx.28.28,
-                                                                     data = db)))[1,2],
-                                 ns = "", labtext = "")) %>%
+                                                                     data = db)))[1,2])) %>%
   mutate(p.value = as.numeric(as.character(p.value)),
          hazrat = as.numeric(as.character(hazrat)),
          labcol = ifelse(hazrat < 1, "red", "black"))
@@ -398,7 +346,6 @@ allallbac <- as.data.frame(cbind(AbxClass = "All", cancer = "All",
 
 Adding preserved full cohort:
 ```{r}
-heatclass$hazrat <- as.numeric(heatclass$hazrat)
 heatclass <- bind_rows(heatclass, albac.dat, alcancbac.dat, allallbac)
 ```
 
@@ -415,9 +362,6 @@ dbidhrbycanc <- list()
 
 dbidlabcol <- list()
 
-dbidpatientsbycanc <- list()
-patients <- list()
-
 g <- as.formula(paste("Surv(days, vitalstatus) ~ ", glue_collapse(sterdbid, sep = " + "), sep = ""))
 
 for (c in allcancers) {
@@ -427,18 +371,6 @@ for (c in allcancers) {
   dbidhrbycanc[[c]] <- round(x[,2], 2)
   dbidlabcol[[c]] <- ifelse(x[,2] < 1, "red", "black")
   dbidpvalbycancer[[c]] <- x[,5]
-      
-  for (s in sterdbid){
-    n1 <- sum(tmp[,s], na.rm = TRUE)
-    n0 <- tmp[tmp[s] == 0,]
-    n0 <- length(n0$days)
-    patients[[s]] <- paste(n0, n1, sep = ", ")
-    
-  }
-  
-  dbidpatientsbycanc[[c]] <- patients
-
-  patients <- list()
   
 }
 
@@ -448,44 +380,27 @@ dbidallcancpvals <- bind_rows(dbidpvalbycancer) %>%
   as.data.frame()
 colnames(dbidallcancpvals) <- names(dbidpvalbycancer$Other)
 
-dbidpatientsbycanc <- bind_rows(dbidpatientsbycanc)
-rownames(dbidpatientsbycanc) <- names(dbidpvalbycancer)
 
 dbidlabcol <- bind_rows(dbidlabcol) %>%
   t() %>%
   as.data.frame()
 colnames(dbidlabcol) <- names(dbidhrbycanc$Other)
 
-dbidstickersbycanc <- lapply(dbidhrbycanc, function(x) lapply(x, function(y) ifelse(y > 10, ">10", y)))
-dbidstickersbycanc <- lapply(dbidstickersbycanc, function(x) lapply(x, function(y) as.character(y)))
-dbidstickersbycanc <- bind_rows(dbidstickersbycanc)
-rownames(dbidstickersbycanc) <- names(dbidhrbycanc)
 ```
 
 
-Manipulating the data output by the steroid loop into long format, and creating the dataframe for the heatmap:
+Manipulatin
 ```{r}
-dbidpat <- dbidpatientsbycanc %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "Steroid.ID", value = "ns", -cancer)
 
 dbidlabcol <- dbidlabcol %>%
   rownames_to_column(var = "cancer") %>%
   gather(key = "Steroid.ID", value = "labcol", -cancer) %>%
   mutate(labcol = ifelse(is.na(labcol), "black", labcol))
 
-dbidstickersbycanc <- dbidstickersbycanc %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "Steroid.ID", value = "hazrat", -cancer) %>%
-  full_join(dbidpat) %>%
-  mutate(labtext = paste(ns, hazrat, sep = "\n"))
-
 heatster <- as.data.frame(dbidallcancpvals)  %>%
   rownames_to_column(var = "cancer") %>%
   gather(key = "Steroid.ID", value = "p.value", -cancer) %>%
-  full_join(dbidstickersbycanc) %>%
-  full_join(dbidlabcol) %>%
-  mutate(labtext = as.character(labtext)) 
+  full_join(dbidlabcol) 
 ```
 
 Save data from all cancers:
@@ -510,10 +425,8 @@ alster.dat <- alster.dat %>%
   as.data.frame() %>%
   rownames_to_column(var = "Steroid.ID") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
-         cancer = "All",
-         ns = "", 
-         labtext = "") %>%
-  select(cancer, Steroid.ID, p.value, hazrat, ns,labtext, labcol)
+         cancer = "All") %>%
+  select(cancer, Steroid.ID, p.value, hazrat, labcol)
   
 ```
 
@@ -523,6 +436,7 @@ Save data from all meds:
 sfits <- list()
 db <- db %>%
   mutate(ster.28.28 = check.window(paste(",", sterdays.to.start, ",", sep = ""), c(-28,28)))
+
 for(c in allcancers){
   tmp <- db %>%
     filter(cancer.name == c)
@@ -549,10 +463,8 @@ alcancster.dat <- alcancster.dat %>%
   as.data.frame() %>%
   rownames_to_column(var = "cancer") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
-         Steroid.ID = "All",
-         ns = "", 
-         labtext = "") %>%
-  select(cancer, Steroid.ID, p.value, hazrat, ns,labtext, labcol)
+         Steroid.ID = "All") %>%
+  select(cancer, Steroid.ID, p.value, hazrat, labcol)
   
 ```
 
@@ -563,7 +475,7 @@ sfit <- survfit(Surv(days, vitalstatus) ~ ster.28.28, data = db)
 allallster <- as.data.frame(cbind(Steroid.ID = "All", cancer = "All",
                                   p.value = surv_pvalue(sfit)[1,2], 
                                   hazrat = coefficients(summary(coxph(Surv(days, vitalstatus) ~ ster.28.28,
-                                                                      data = db)))[1,2], ns = "", labtext = "")) %>%
+                                                                      data = db)))[1,2])) %>%
   mutate(p.value = as.numeric(as.character(p.value)),
          hazrat = as.numeric(as.character(hazrat)),
          labcol = ifelse(hazrat < 1, "red", "black"))
@@ -571,7 +483,6 @@ allallster <- as.data.frame(cbind(Steroid.ID = "All", cancer = "All",
 
 Adding preserved full cohort:
 ```{r}
-heatster$hazrat <- as.numeric(heatster$hazrat)
 heatster <- bind_rows(heatster, alster.dat, alcancster.dat, allallster)
 ```
 
