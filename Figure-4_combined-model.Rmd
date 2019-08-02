@@ -40,13 +40,23 @@ db <- db %>%
 ```{r}
 sfit <- survfit(Surv(days, vitalstatus) ~ abx.28.28 + steroid.28.28, data = db)
 
-comb_curv <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, ylab = "", legend = "none", legend.title = "", legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", "ATB=1,Steroids=0", "ATB,Steroids = 1"), font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08), palette = "Dark2")
+comb_curv <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, ylab = "", 
+                        legend = "none", legend.title = "", 
+                        legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1",
+                                        "ATB=1,Steroids=0", "ATB,Steroids = 1"),
+                        font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08), 
+                        palette = "Dark2")
 
 comb_curv
 ```
 
 ```{r}
-comb_curv.leg <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, legend = "right", legend.title = "", legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", "ATB=1,Steroids=0", "ATB,Steroids = 1"), font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08), palette = "Dark2")
+comb_curv.leg <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE,
+                            legend = "right", legend.title = "", 
+                            legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", 
+                                            "ATB=1,Steroids=0", "ATB,Steroids = 1"), 
+                            font.legend = c(12), fontsize = 6, xlab = "Days",
+                            pval.coord = c(0,0.08), palette = "Dark2")
 
 comb_curv.leg
 ```
@@ -104,8 +114,9 @@ for(c in allcancers){
     canc.percentile.res[[i]] <- as.data.frame(cbind(cancer = c,
                                                     lambdahat = cv.fit$lambda.min,
                                                     covcount = length(Active.Index),
-                                                    whichco = glue_collapse(Coefficients@Dimnames[[1]][Active.Index],
+                                                    whichco=glue_collapse(Coefficients@Dimnames[[1]][Active.Index],
                                                                             sep = "+")))
+    
     canc.box.res[[i]] <- as.data.frame(cbind(term = Coefficients@Dimnames[[1]][Active.Index], 
                                         HR = exp(Coefficients[Active.Index]),
                                         cancer = c))
