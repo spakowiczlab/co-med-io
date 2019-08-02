@@ -118,7 +118,7 @@ table.S1
 ### CS
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG", "CCI", "Cancer", "Staging", 
+listVars <- c("BMI", "Age", "Sex", "ECOG", "Cancer", "Staging", 
               "Immunotherapy", "ATB within 28 days of ICI", 
               "CS within 28 days of ICI")
 catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging",
