@@ -60,6 +60,11 @@ sterfloattime <- db %>%
   select(days, vitalstatus, sterdays.to.start) %>%
   mutate(sterdays.to.start = paste(",", sterdays.to.start, ",", sep = ""))
 
+ster.zero.cohort <- db %>%
+  mutate(tmp = check.window(sterdays.to.start, c(-180,180))) %>%
+  filter(tmp == 0) %>%
+  select(days, vitalstatus, tmp)
+
 leftanchor <-c(-180:151)
 sterwindresults <- list()
 
@@ -75,8 +80,12 @@ for(i in 1:length(leftanchor)){
     filter(tmp3 == 0 | tmp3 == -1) %>%
     mutate(tmp2 = tmp)
   
+  sterfloatforsurv <- sterfloattime %>%
+    filter(tmp == 1) %>%
+    bind_rows(ster.zero.cohort)
+  
   try({
-    survtemp <- coxph(Surv(days, vitalstatus) ~ tmp, data = sterfloattime)
+    survtemp <- coxph(Surv(days, vitalstatus) ~ tmp, data = sterfloatforsurv)
     sterwindresults[[i]] <- survtemp %>%
       tidy() %>%
       mutate(hazard.ratio = exp(estimate),
