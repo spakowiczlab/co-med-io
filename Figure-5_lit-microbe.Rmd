@@ -64,20 +64,20 @@ tree$tip.label[1] <- "Klebsiella pneumoniae"
 
 ```{r create frame of info for aesthetics}
 resp.stat <- c("r", "n", "n", "n", "n", "r", "r", "r", "r", "n", "n", "n", "r", "r", "r", "r", "n", "n")
-
 resp.ref <- c("r", "r", "r", "r", "r", "r", "g", "g", "g", "g", "g", "g", "m", "m", "m", "m", "m", "m")
-resp.key <- as.data.frame(cbind(search_string = litmics, resp.stat, resp.ref)) %>%
-  mutate(fixed = "hold") 
+
+resp.key <- as.data.frame(cbind(search_string = litmics,
+                                resp.stat, resp.ref,
+                                fixed = "hold"))
 
 resp.key <- taxa %>%
   dplyr::select(search_string, unique_name) %>%
   left_join(resp.key) %>%
   mutate(tip.label = unique_name) %>%
-  dplyr::select(tip.label, resp.stat, resp.ref)
+  dplyr::select(tip.label, resp.stat, resp.ref) %>%
+  mutate(tip.label = gsub("_ott\\d+", "", tip.label),
+         tip.label = gsub("_", " ", tip.label))
 
-
-resp.key$tip.label <- gsub("_ott\\d+", "", resp.key$tip.label)
-resp.key$tip.label <- gsub("_", " ", resp.key$tip.label)
 resp.key$tip.label[15] <- "Klebsiella pneumoniae"
 ```
 
@@ -85,13 +85,13 @@ resp.key$tip.label[15] <- "Klebsiella pneumoniae"
 tree.plot <- ggtree(tree)  %<+%
   resp.key + 
   geom_tiplab(aes(color = resp.stat), geom = "text", offset = 0.2) +
-  #geom_text2(aes(subset=!isTip, label=node), hjust=-.3) +
-  #geom_nodelab() +
   scale_color_manual(breaks = c("n", "r"), values = c("darkred", "royalblue")) +
   geom_tippoint(aes(shape = resp.ref), size = 5) +
   scale_shape_manual(breaks = c("g", "m", "r"), values = c("square", "circle", "triangle")) +
-  geom_cladelabel(node = 30, label = "Bacteroidetes \n(Gopalakrishnan)", geom = "text", color = "darkred", offset = -2.3, offset.text = -2.7, align = TRUE) +
-  geom_cladelabel(node = 22, label = "Firmicutes \n(Gopalakrishnan)", geom = "text", color = "royalblue", offset = -4.3, offset.text = -2.6, align = TRUE) +
+  geom_cladelabel(node = 30, label = "Bacteroidetes \n(Gopalakrishnan)", geom = "text", color = "darkred",
+                  offset = -2.3, offset.text = -2.7, align = TRUE) +
+  geom_cladelabel(node = 22, label = "Firmicutes \n(Gopalakrishnan)", geom = "text", color = "royalblue",
+                  offset = -4.3, offset.text = -2.6, align = TRUE) +
   xlim(c(0,11.5)) 
   
 tree.plot
@@ -116,22 +116,40 @@ van <- c(n,n,n,n,n,n,y,y,y,y,y,y,y,y,y,y,n,n)
 tetr <- c(y,y,y,y,y,y,n,y,y,y,y,y,y,y,y,y,y,y)
 line <- c(y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,y,n)
 
-susc <- as.data.frame(cbind(taxon = order, Cephalosporins = ceph, Piperacillin = pip, Amoxicillin = amclac,  Clindamycin = clin, Fluoroquinolone = fq, Macrolide = macr, Metronidazole = macr, Sulfamethoxazole = trim, Vancomycin = van, Tetracycline = tetr, Linezolid = line))
-
-susc <- susc %>%
+susc <- as.data.frame(cbind(taxon = order, 
+                            Cephalosporins = ceph, 
+                            Piperacillin = pip, 
+                            Amoxicillin = amclac,  
+                            Clindamycin = clin, 
+                            Fluoroquinolone = fq, 
+                            Macrolide = macr, 
+                            Metronidazole = metr, 
+                            Sulfamethoxazole = trim, 
+                            Vancomycin = van, 
+                            Tetracycline = tetr, 
+                            Linezolid = line)) %>%
   gather(-taxon, key = "Antibiotic", value = Effective)
 ```
 
 ```{r construct heatmap}
-heat <- ggplot(data = susc, aes(fct_relevel(taxon, rev(order)), fct_relevel(Antibiotic, c("Cephalosporins", "Piperacillin", "Amoxicillin", antiorder[-1])))) + 
+heat <- ggplot(data = susc, aes(fct_relevel(taxon, rev(order)), 
+                                fct_relevel(Antibiotic, c("Cephalosporins", "Piperacillin", "Amoxicillin",
+                                                          antiorder[-1])))) + 
   geom_tile(aes(fill = Effective, color = "black")) +
   scale_fill_manual(breaks = c("yes", "no"), values = c("lightcyan1", "seagreen")) +
   scale_color_manual(breaks = "black", values = "grey85") +
   coord_flip() +
   labs(x = "", y = "") +
-  scale_y_discrete(breaks = c("Cephalosporins", "Piperacillin", "Amoxicillin", "Clindamycin", "Vancomycin", "Sulfamethoxazole", "Tetracycline", "Fluoroquinolone", "Macrolide", "Metronidazole", "Linezolid"), labels = c("Cephalosporins", "Piperacillin-Tazobactam", "Amoxicillin-Clavulanate", "Clindamycin", "Vancomycin", "Sulfamethoxazole-Trimethoprim", "Tetracycline", "Fluoroquinolone", "Macrolide", "Metronidazole", "Linezolid")) +
+  scale_y_discrete(breaks = c("Cephalosporins", "Piperacillin", "Amoxicillin", "Clindamycin", "Vancomycin",
+                              "Sulfamethoxazole", "Tetracycline", "Fluoroquinolone", "Macrolide", "Metronidazole",
+                              "Linezolid"),
+                   labels = c("Cephalosporins", "Piperacillin-Tazobactam", "Amoxicillin-Clavulanate", 
+                              "Clindamycin", "Vancomycin", "Sulfamethoxazole-Trimethoprim", "Tetracycline",
+                              "Fluoroquinolone", "Macrolide", "Metronidazole", "Linezolid")) +
   theme_bw() +
-  theme(axis.text.x = element_text(hjust = 1, angle = 45, size = 10), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position = "none")
+  theme(axis.text.x = element_text(hjust = 1, angle = 45, size = 10),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        legend.position = "none")
 
 heat
 ```
@@ -159,7 +177,8 @@ test2 <- grid.arrange(
 Counting
 ```{r}
 test <- susc %>%
-  mutate(tip.label = ifelse(taxon == "Klebsiella pneumoniae (species in domain Eukaryota)", "Klebsiella pneumoniae", as.character(taxon))) %>%
+  mutate(tip.label = ifelse(taxon == "Klebsiella pneumoniae (species in domain Eukaryota)", 
+                            "Klebsiella pneumoniae", as.character(taxon))) %>%
   left_join(resp.key)
 
 test2 <- test %>%
@@ -206,7 +225,7 @@ fisher.test(y)
 
 Metronidazole
 ```{r}
-x <- c(4,2,5,7)
+x <- c(1,5,8,4)
 y <- matrix(x, ncol = 2)
 fisher.test(y)
 ```
