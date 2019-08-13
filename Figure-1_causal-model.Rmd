@@ -20,7 +20,7 @@ This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 ```{r, out.width="100%", out.height="100%"}
 
 
-g <- graph.formula("ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response" -+
+g <- graph.formula("ABx" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response" -+
                      "Overall Survival",
                    "Corticosteroids" -+ "Prostaglandin Inflammation" -+ "Microbiome" -+
                      "T-cell Mediated Inflammation",
