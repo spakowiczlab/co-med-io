@@ -58,7 +58,7 @@ coxdf <-
          nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging, abx.28.28,
          steroid.28.28) %>%
   left_join(ionames) %>%
-  mutate(ECOG = ecog,
+  mutate(`ECOG PS` = fct_relevel(ifelse(ecog > 2, ">2", ecog), "0","1","2",">2"),
          Staging  = ifelse(staging == 5, "Unknown", staging),
          BMI = bmi.calc,
          Age = age,
@@ -82,9 +82,9 @@ coxdf <-
 # Creating table 1
 
 ```{r table 1}
-listVars <- c("BMI", "Age", "Sex", "ECOG", "Cancer", "Staging", "Immunotherapy",
+listVars <- c("BMI", "Age", "Sex", "ECOG PS", "Cancer", "Staging", "Immunotherapy",
               "ATB within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging", 
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging", 
              "ATB within 28 days of ICI", "CS within 28 days of ICI")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
@@ -100,9 +100,9 @@ table1
 ### ATB
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG",  "Cancer", "Staging", "Immunotherapy",
+listVars <- c("BMI", "Age", "Sex", "ECOG PS",  "Cancer", "Staging", "Immunotherapy",
               "ATB within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging", 
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging", 
              "ATB within 28 days of ICI", "CS within 28 days of ICI")
 table.S1 <- CreateTableOne(vars = listVars,
                            strata = "ATB within 28 days of ICI",
@@ -118,10 +118,10 @@ table.S1
 ### CS
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG", "Cancer", "Staging", 
+listVars <- c("BMI", "Age", "Sex", "ECOG PS", "Cancer", "Staging", 
               "Immunotherapy", "ATB within 28 days of ICI", 
               "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG", "Staging",
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging",
              "ATB within 28 days of ICI", "CS within 28 days of ICI")
 table.S2 <- CreateTableOne(vars = listVars,
                            data = coxdf,
