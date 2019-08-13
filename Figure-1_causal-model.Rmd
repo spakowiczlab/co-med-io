@@ -20,42 +20,45 @@ This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 ```{r, out.width="100%", out.height="100%"}
 
 
-g <- graph.formula("CCI" -+ "ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response" -+
+g <- graph.formula("ATB" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response" -+
                      "Overall Survival",
-                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ "Microbiome" -+
+                   "Corticosteroids" -+ "Prostaglandin Inflammation" -+ "Microbiome" -+
                      "T-cell Mediated Inflammation",
-                   "CCI" -+ "PPI" -+ "Microbiome",
-                   "CCI" -+ "H2B" -+ "Microbiome",
-                   "CCI" -+ "NSAIDs" -+ "Prostaglandin Inflammation",
+                   "PPI" -+ "Microbiome",
+                   "H2B" -+ "Microbiome",
+                   "NSAIDs" -+ "Prostaglandin Inflammation",
                    "Corticosteroids" -+ "T-cell Mediated Inflammation",
                    "Age" -+ "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
                    "Age" -+ "T-cell Mediated Inflammation",
                    "Staging" -+ "Prostaglandin Inflammation",
                    "Age" -+ "ECOG" -+ "Prostaglandin Inflammation",
-                   "CCI" -+ "ECOG" -+ "BMI" -+ "Prostaglandin Inflammation",
+                   "ECOG" -+ "BMI" -+ "Prostaglandin Inflammation",
                    "ECOG" -+ "T-cell Mediated Inflammation",
                    "Statins" -+ "Prostaglandin Inflammation",
-                   "CCI" -+ "Statins",
                    simplify = TRUE
                    )
 
 # Set colors by categories -- medications, clinical variables, mediators of 
 # response and outcomes
-V(g)$color <- c("#cfb4de", "#77d1e5", "#aadab4", "#aadab4", "#e2bf99", 
-                "#e2bf99", "#77d1e5", "#aadab4", "#77d1e5", "#77d1e5",
-                "#77d1e5","#cfb4de","#cfb4de","#cfb4de","#cfb4de", "#77d1e5")
+#cfb4de purple patient char
+#77d1e5 blue meds
+#aadab4 green mediator
+#e2bf99 orange result
+V(g)$color <- c("#77d1e5", "#aadab4", "#aadab4", "#e2bf99", "#e2bf99", 
+                "#77d1e5", "#aadab4", "#77d1e5", "#77d1e5", "#77d1e5",
+                "#cfb4de","#cfb4de","#cfb4de","#cfb4de", "#77d1e5")
 
 
 # Modify edge widths to define our hypothesized primary pathway
-edge.arrow.sizes <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1,
-                     1, 1, 0.5, 1, 0.5, 1, 0.5, 0.5, 0.5,
-                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-edge.arrow.widths <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1,
-                      1, 1, 0.5, 1, 0.5, 1, 0.5, 0.5, 0.5,
-                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
-edge.widths <- c(1, 1, 1, 1, 1, 1, 1, 5, 5,
-                 5, 5, 1, 5, 1, 5, 1, 1,
-                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+edge.arrow.sizes <- c(1, 1, 1, 1, 0.5, 1, 0.5, 1, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+edge.arrow.widths <- c(1, 1, 1, 1, 0.5, 1, 0.5, 1, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+                      0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+edge.widths <- c(5, 5, 5, 5, 1, 5, 1, 5, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1,
+                 1, 1, 1, 1)
 
 # Create Figure 1, to be manipulated in Adobe Illustrator
 tkplot(g, 
@@ -71,8 +74,7 @@ This is figS1 for the paper. More edits will be made in adobe illustrator.
 
 ```{r}
 # Add edge labels for citing references
-lg_letters <- c(letters, "aa", "ab", "ac")
-E(g)$label = lg_letters[1:ecount(g)]
+E(g)$label = LETTERS[1:ecount(g)]
 
 # Create figure Supplemental-1, to be manipulated in Adobe Illustrator
 tkplot(g,
@@ -84,6 +86,5 @@ tkplot(g,
        edge.width = edge.widths,
        layout=layout.circle
        )
-
 
 ```
