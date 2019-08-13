@@ -64,7 +64,7 @@ coxdf <-
          Age = age,
          Cancer = cancer.name, 
          Sex = sex,
-         `ATB within 28 days of ICI` = abx.28.28,
+         `ABx within 28 days of ICI` = abx.28.28,
          `CS within 28 days of ICI` = steroid.28.28,
           Immunotherapy = ifelse(Immunotherapy == "Nivolumab + Chemotherapy",
                                 "Other", Immunotherapy),
@@ -83,9 +83,9 @@ coxdf <-
 
 ```{r table 1}
 listVars <- c("BMI", "Age", "Sex", "ECOG PS", "Cancer", "Staging", "Immunotherapy",
-              "ATB within 28 days of ICI", "CS within 28 days of ICI")
+              "ABx within 28 days of ICI", "CS within 28 days of ICI")
 catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging", 
-             "ATB within 28 days of ICI", "CS within 28 days of ICI")
+             "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
                          factorVars = catVars)
@@ -97,15 +97,15 @@ table1
 
 ## Stratifications by medications
 
-### ATB
+### ABx
 
 ```{r}
 listVars <- c("BMI", "Age", "Sex", "ECOG PS",  "Cancer", "Staging", "Immunotherapy",
-              "ATB within 28 days of ICI", "CS within 28 days of ICI")
+              "ABx within 28 days of ICI", "CS within 28 days of ICI")
 catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging", 
-             "ATB within 28 days of ICI", "CS within 28 days of ICI")
+             "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table.S1 <- CreateTableOne(vars = listVars,
-                           strata = "ATB within 28 days of ICI",
+                           strata = "ABx within 28 days of ICI",
                            data = coxdf,
                            factorVars = catVars,
                            argsNonNormal = listVars,
@@ -119,10 +119,10 @@ table.S1
 
 ```{r}
 listVars <- c("BMI", "Age", "Sex", "ECOG PS", "Cancer", "Staging", 
-              "Immunotherapy", "ATB within 28 days of ICI", 
+              "Immunotherapy", "ABx within 28 days of ICI", 
               "CS within 28 days of ICI")
 catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging",
-             "ATB within 28 days of ICI", "CS within 28 days of ICI")
+             "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table.S2 <- CreateTableOne(vars = listVars,
                            data = coxdf,
                            factorVars = catVars,
