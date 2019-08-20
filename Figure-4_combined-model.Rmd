@@ -147,7 +147,7 @@ lassores$covcount <- as.factor(lassores$covcount)
 box.res <- bind_rows(box.res)
 ```
 
-# C) Boxplots of HR results from lasso
+# C) Boxplots of HR results from lasso with barplots of how frequently models selecting given covariates were chosen
 
 ```{r}
 box.res$HR <- as.numeric(box.res$HR)
@@ -173,8 +173,6 @@ box.res  %>%
   coord_flip() 
 ```
 
-
-# D) Barplots of how frequently models selecting given covariates were chosen
 
 ```{r}
 box.res %>%

@@ -43,7 +43,7 @@ meds_iostart <- c("h2b_iostart", "nsaid_iostart", "ppi", "statin", "steroid.28.2
 allcancers <- unique(db$cancer.name)[1:7]
 ```
 
-# A) Survival curves of each medication at iostart
+# A+B) Survival curves of each medication at iostart
 
 ```{r create survival plots}
 forms <- list()
@@ -90,7 +90,7 @@ almeds.dat <- almeds.dat %>%
 
 
 
-# Also NotDetermined) Heatmap of values when split by cancer
+# C) Heatmap of values when split by cancer
 
 ```{r, message=FALSE, warning=FALSE}
 curvesbycancer <- list()
@@ -149,7 +149,6 @@ for(c in allcancers){
 
 
 allcancpvals <- bind_rows(pvalbycancer)
-#allcancpvals <- as.data.frame(sapply(allcancpvals, function(x) ifelse(is.na(x), 10, x)))
 rownames(allcancpvals) <- names(pvalbycancer)
 
 patientsbycanc <- bind_rows(patientsbycanc)
