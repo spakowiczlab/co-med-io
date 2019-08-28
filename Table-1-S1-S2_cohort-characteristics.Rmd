@@ -63,6 +63,7 @@ coxdf <-
          BMI = bmi.calc,
          Age = age,
          Cancer = cancer.name, 
+         CCI = ifelse(comorb.score <= 1, "0-1", ">2"),
          Sex = sex,
          `ABx within 28 days of ICI` = abx.28.28,
          `CS within 28 days of ICI` = steroid.28.28,
@@ -82,9 +83,9 @@ coxdf <-
 # Creating table 1
 
 ```{r table 1}
-listVars <- c("BMI", "Age", "Sex", "ECOG PS", "Cancer", "Staging", "Immunotherapy",
+listVars <- c("BMI", "Age", "Sex", "ECOG PS", "CCI", "Cancer", "Staging", "Immunotherapy",
               "ABx within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging", 
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "CCI", "Staging", 
              "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
@@ -100,9 +101,9 @@ table1
 ### ABx
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG PS",  "Cancer", "Staging", "Immunotherapy",
+listVars <- c("BMI", "Age", "Sex", "ECOG PS", "CCI",  "Cancer", "Staging", "Immunotherapy",
               "ABx within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging", 
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "CCI", "Staging", 
              "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table.S1 <- CreateTableOne(vars = listVars,
                            strata = "ABx within 28 days of ICI",
@@ -118,10 +119,10 @@ table.S1
 ### CS
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG PS", "Cancer", "Staging", 
+listVars <- c("BMI", "Age", "Sex", "ECOG PS", "CCI", "Cancer", "Staging", 
               "Immunotherapy", "ABx within 28 days of ICI", 
               "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "Staging",
+catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "CCI", "Staging",
              "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table.S2 <- CreateTableOne(vars = listVars,
                            data = coxdf,
