@@ -181,7 +181,7 @@ box.res %>%
   filter(!is.na(term)) %>%
   ggplot(aes(x = term, fill = term)) + 
   geom_bar() +
-  facet_wrap(vars(cancer), scales = "free", strip.position = "left",nrow = 9) +
+  facet_wrap(vars(cancer), scales = "free_y", strip.position = "left",nrow = 9) +
   scale_color_brewer(aesthetics = c("color", "fill"), palette = "Dark2", name = "Covariate") +
   labs(x = "", y = "") +
   theme_bw() +
@@ -190,7 +190,8 @@ box.res %>%
         axis.ticks.y=element_blank(),
         axis.text.x=element_text(face="bold"),
         axis.title=element_blank(),
-        strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold")) +
+        strip.text.y = element_text(hjust=0,vjust = 1,angle=180,face="bold"),
+        panel.spacing = unit(1.2, "lines")) +
   coord_flip()+
   guides(fill = guide_legend(reverse = TRUE)) 
 ```
