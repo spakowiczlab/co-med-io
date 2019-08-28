@@ -71,12 +71,13 @@ db <- db %>%
   mutate(Antibiotics = abx.28.28,
          Steroids = steroid.28.28,
          ECOG = ecog,
+         CCI = ifelse(comorb.score <= 1, 0, 1),
          BMI = bmi.calc,
          Sex = sex,
          Age = age,
          `Stage IV` = ifelse(staging == 4, 1, 0))
 
-cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + `Stage IV` + BMI + Sex + Age, data = db)
+cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + CCI + `Stage IV` + BMI + Sex + Age, data = db)
 
 ggforest(cph) 
   # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
@@ -97,9 +98,10 @@ for(c in allcancers){
   tmp <- db %>%
     filter(!is.na(ECOG) & !is.na(BMI) & !is.na(`Stage IV`)) %>%
     filter(cancer.name == c)
+  
   x <- tmp %>%
     mutate(Male = ifelse(Sex == "Male", 1, 0)) %>%
-    select(ATB, CS, ECOG, BMI, Age, `Stage IV`, Male) %>%
+    select(ATB, CS, ECOG, CCI, BMI, Age, `Stage IV`, Male) %>%
     as.matrix()
   
   set.seed(112358)
