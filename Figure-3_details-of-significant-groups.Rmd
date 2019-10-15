@@ -157,7 +157,7 @@ abxpvaltime$leftanchor <- abxpvaltime$leftanchor + 15
 ## Combine + plot results
 
 ```{r}
-abxpvaltime$source <- "ATB"
+abxpvaltime$source <- "ABx"
 sterpvaltime$source <- "CS"
 allpvaltime <- bind_rows(abxpvaltime, sterpvaltime)
 
@@ -165,7 +165,7 @@ ggplot(data = allpvaltime, aes(x = leftanchor, y = hazard.ratio)) +
   geom_line(aes(color = source)) +
   geom_ribbon(aes(ymin = low.bound, ymax = upper.bound, fill = source), alpha = 0.5) +
   geom_hline(yintercept = 1) +
-  scale_color_manual(aesthetics = c("fill", "color"), breaks = c("ATB", "CS"), 
+  scale_color_manual(aesthetics = c("fill", "color"), breaks = c("ABx", "CS"), 
                      values = c("darkred", "darkblue"), name = "Drug") +
   labs(title = "", x = "Days relative to ICI start",y = "Hazard Ratio" ) +
   theme_bw() + 

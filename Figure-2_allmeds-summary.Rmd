@@ -206,7 +206,7 @@ heat.plot <- heat.data %>%
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_discrete(breaks = meds_iostart, 
-                   labels = c("H2B", "NSAIDs", "PPI", "Statins", "Steroids", "Antibiotics")) +
+                   labels = c("H2B", "NSAIDs", "PPI", "Statins", "CS", "ABx")) +
   scale_y_discrete(breaks = c("Other", "Bladder Cancer", "Head and Neck Carcinoma", "Melanoma",
                               "Non-Small Cell Lung Cancer", "Renal Cell Carcinoma", "Sarcoma", "All"), 
                    labels = c("Other", "Bladder Cancer", "Head and Neck\nCarcinoma", "Melanoma", 

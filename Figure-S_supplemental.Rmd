@@ -117,7 +117,7 @@ meds_iostart <- c("h2b_iostart", "nsaid_iostart", "ppi", "statin", "steroid.28.2
 dat.for.upset <- db %>%
   select(meds_iostart)
 
-colnames(dat.for.upset) <- c("H2B", "NSAIDs", "PPI", "Statins", "Steroids", "Antibiotics")
+colnames(dat.for.upset) <- c("H2B", "NSAIDs", "PPI", "Statins", "CS", "ABx")
 ```
 
 ```{r save upset, eval = FALSE}

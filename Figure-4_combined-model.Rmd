@@ -42,8 +42,8 @@ sfit <- survfit(Surv(days, vitalstatus) ~ abx.28.28 + steroid.28.28, data = db)
 
 comb_curv <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE, ylab = "", 
                         legend = "none", legend.title = "", 
-                        legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1",
-                                        "ATB=1,Steroids=0", "ATB,Steroids = 1"),
+                        legend.labs = c("ABx, CS=0", "ABx=0,CS=1",
+                                        "ABx=1,CS=0", "ABx,CS = 1"),
                         font.legend = c(12), fontsize = 6, xlab = "Days", pval.coord = c(0,0.08), 
                         palette = "Dark2")
 
@@ -53,8 +53,8 @@ comb_curv
 ```{r}
 comb_curv.leg <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pval = TRUE,
                             legend = "right", legend.title = "", 
-                            legend.labs = c("ATB, Steroids=0", "ATB=0,Steroids=1", 
-                                            "ATB=1,Steroids=0", "ATB,Steroids = 1"), 
+                            legend.labs = c("ABx, CS=0", "ABx=0,CS=1", 
+                                            "ABx=1,CS=0", "ABx,CS = 1"), 
                             font.legend = c(12), fontsize = 6, xlab = "Days",
                             pval.coord = c(0,0.08), palette = "Dark2")
 
@@ -68,8 +68,8 @@ comb_curv.leg
 # B) Combined model for all cancers
 ```{r}
 db <- db %>%
-  mutate(Antibiotics = abx.28.28,
-         Steroids = steroid.28.28,
+  mutate(ABx = abx.28.28,
+         CS = steroid.28.28,
          ECOG = ecog,
          CCI = ifelse(comorb.score <= 1, 0, 1),
          BMI = bmi.calc,
@@ -77,7 +77,7 @@ db <- db %>%
          Age = age,
          `Stage IV` = ifelse(staging == 4, 1, 0))
 
-cph <- coxph(Surv(days, vitalstatus) ~ Antibiotics + Steroids + ECOG + CCI + `Stage IV` + BMI + Sex + Age, data = db)
+cph <- coxph(Surv(days, vitalstatus) ~ ABx + CS + ECOG + CCI + `Stage IV` + BMI + Sex + Age, data = db)
 
 ggforest(cph) 
   # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
@@ -101,7 +101,7 @@ for(c in allcancers){
   
   x <- tmp %>%
     mutate(Male = ifelse(Sex == "Male", 1, 0)) %>%
-    select(ATB, CS, ECOG, CCI, BMI, Age, `Stage IV`, Male) %>%
+    select(ABx, CS, ECOG, CCI, BMI, Age, `Stage IV`, Male) %>%
     as.matrix()
   
   set.seed(112358)
