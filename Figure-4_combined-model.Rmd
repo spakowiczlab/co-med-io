@@ -18,7 +18,7 @@ library(glue)
 
 
 ```{r}
-db <- readRDS("../db-for-git.RDS")
+db <- readRDS("db.RDS")
 ```
 
 ```{r}
@@ -134,13 +134,13 @@ lassores <- bind_rows(all.percentile.res)
 lassores$lambdahat <- as.numeric(lassores$lambdahat)
 lassores$covcount <- as.factor(lassores$covcount)
 
-# saveRDS(lassores, "../data/generated/fig4_percentile-lasso.RDS")
-# saveRDS(box.res, "../data/generated/fig4-sup_percent-appearance-and-hr_boxplots")
+# saveRDS(lassores, "fig4_percentile-lasso.RDS")
+# saveRDS(box.res, "fig4-sup_percent-appearance-and-hr_boxplots")
 ```
 
 ```{r}
-# lassores <- readRDS("../data/generated/fig4_percentile-lasso.RDS")
-# box.res <- readRDS("../data/generated/fig4-sup_percent-appearance-and-hr_boxplots.RDS")
+# lassores <- readRDS("fig4_percentile-lasso.RDS")
+# box.res <- readRDS("fig4-sup_percent-appearance-and-hr_boxplots.RDS")
 ```
 
 ```{r}
