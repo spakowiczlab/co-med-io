@@ -40,7 +40,7 @@ db <- db %>%
 ```{r define interesting columns}
 meds_iostart <- c("h2b_iostart", "nsaid_iostart", "ppi", "statin", "steroid.28.28", "abx.28.28")
 
-allcancers <- unique(db$cancer.name)[1:7]
+allcancers <- c('Other', 'Melanoma', 'Non-Small Cell Lung Cancer', 'Head and Neck Carcinoma', 'Renal Cell Carcinoma', 'Sarcoma', 'Bladder Cancer')
 ```
 
 # A+B) Survival curves of each medication at iostart
@@ -61,9 +61,8 @@ almeds.plots <- ggsurvplot(sfits, pval = TRUE, conf.int = FALSE,
                            fontsize = 6, font.legend = list(size = 12))
 ```
 
-```{r save survival plots}
-# lapply(meds_iostart, function(x) ggsave(print(almeds.plots[[x]]), filename = paste("../figures/Figure-1/surv-curve_", x, ".png", sep = ""), device = "png"))
-```
+
+# C) Heatmap of values when split by cancer
 
 ```{r retain full cohort info for heatmap}
 almeds.pval <- lapply(sfits, function (x) surv_pvalue(x)[1,2])
@@ -81,16 +80,10 @@ almeds.dat <- almeds.dat %>%
   as.data.frame() %>%
   rownames_to_column(var = "meds") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
-         cancer = "All",
-         ns = "", 
-         labtext = "") %>%
-  select(cancer, meds, p.value, hazrat, ns,labtext, labcol)
+         cancer = "All",) %>%
+  select(cancer, meds, p.value, labcol)
   
 ```
-
-
-
-# C) Heatmap of values when split by cancer
 
 ```{r, message=FALSE, warning=FALSE}
 curvesbycancer <- list()
@@ -105,19 +98,12 @@ hazrat <- list()
 labcol <- list()
 labs <- list()
 
-patientsbycanc <- list()
-patients <- list()
 
 for(c in allcancers){
   
   tmp <- subset(db, db$cancer.name == c)
   
   for(s in meds_iostart){
-    
-    n1 <- sum(tmp[[s]], na.rm = TRUE)
-    n0 <- tmp[tmp[[s]] == 0,]
-    n0 <- length(n0$days)
-    patients[[s]] <- paste(n0, n1, sep = ", ")
     
     f <- as.formula(paste("Surv(days, vitalstatus) ~ ", s, sep = ""))
     
@@ -127,7 +113,6 @@ for(c in allcancers){
       pvals[[s]] <- surv_pvalue(sfits[[s]])[1,2]
       
       x <- coefficients(summary(coxph(formula = f, data = tmp)))[,2]
-      hazrat[[s]] <- ifelse(x > 10, ">10", as.character(round(x, 2)))
       labs[[s]] <- ifelse(x < 1, "red", "black")
       
     })
@@ -135,14 +120,10 @@ for(c in allcancers){
   
   curvesbycancer[[c]] <- sfits
   pvalbycancer[[c]] <- pvals
-  patientsbycanc[[c]] <- patients
-  hrbycanc[[c]] <- hazrat
   labcol[[c]] <- labs
   
   sfits <- list()
   pvals <- list()
-  patients <- list()
-  hazrat <- list()
   labs <- list()
   
 }
@@ -151,41 +132,24 @@ for(c in allcancers){
 allcancpvals <- bind_rows(pvalbycancer)
 rownames(allcancpvals) <- names(pvalbycancer)
 
-patientsbycanc <- bind_rows(patientsbycanc)
-rownames(patientsbycanc) <- names(pvalbycancer)
-
 labcol <- bind_rows(labcol) 
 rownames(labcol) <- names(pvalbycancer)
-
-stickersbycanc <- bind_rows(hrbycanc)
-rownames(stickersbycanc) <- names(pvalbycancer)
 ```
 
 ```{r}
-pat <- patientsbycanc %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "meds", value = "ns", -cancer)
-
 labcol <- labcol %>%
   rownames_to_column(var = "cancer") %>%
   gather(key = "meds", value = "labcol", -cancer) %>%
   mutate(labcol = ifelse(is.na(labcol), "black", labcol))
 
-stickersbycanc <- stickersbycanc %>%
-  rownames_to_column(var = "cancer") %>%
-  gather(key = "meds", value = "hazrat", -cancer) %>%
-  full_join(pat) %>%
-  mutate(labtext = paste(ns, hazrat, sep = "\n"))
 
 heat.data <- as.data.frame(allcancpvals)  %>%
   rownames_to_column(var = "cancer") %>%
   gather(key = "meds", value = "p.value", -cancer) %>%
-  full_join(stickersbycanc) %>%
   full_join(labcol)
 ```
 
 ```{r}
-heat.data$hazrat <- as.numeric(heat.data$hazrat)
 heat.data <- bind_rows(almeds.dat, heat.data)
 ```
 
@@ -214,8 +178,4 @@ heat.plot <- heat.data %>%
 
 heat.plot
 
-```
-
-```{r}
-# ggsave(plot = heat.plot, filename = "../figures/Figure-1/heatmap_pvalues-by-cancer.png", width = 5, height = 7, device = "png")
 ```
