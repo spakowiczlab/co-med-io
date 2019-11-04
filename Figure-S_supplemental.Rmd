@@ -83,9 +83,7 @@ othatb.tab %>%
   flextable()
 ```
 
-```{r}
-#write.csv(othatb.tab, "../tables/supplemental/other-atb-quantities.csv")
-```
+
 
 # Table S2)
 
@@ -106,9 +104,7 @@ othster.tab %>%
   flextable()
 ```
 
-```{r}
-#write.csv(othster.tab, "../tables/supplemental/other-steroid-quantities.csv")
-```
+
 
 # Figure S1)
 ```{r prep for upset}
@@ -121,11 +117,9 @@ colnames(dat.for.upset) <- c("H2B", "NSAIDs", "PPI", "Statins", "CS", "ABx")
 ```
 
 ```{r save upset, eval = FALSE}
-#png("../figures/supplemental/upset_all-meds-confounding.png", units = "in", height = 5, width = 8, res = 600)
 
 upset(dat.for.upset, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "")
 
-#dev.off()
 ```
 
 # Figure S2)
@@ -137,10 +131,8 @@ colnames(dat.for.upset) <- c("BetaLactam", "Macrolide",  "Other Antibacterial", 
 ```
 
 ```{r, eval = FALSE}
-#png("../figures/supplemental/upset_atb.png", units = "in", height = 5, width = 8, res = 600)
-
 upset(dat.for.upset, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 9)
-#dev.off()
+
 ```
 
 # Figure S3)
@@ -152,11 +144,9 @@ colnames(dat.for.upset)[6] <- "Other Steroid"
 ```
 
 ```{r, eval = FALSE}
-#png("../figures/supplemental/upset_steroid.png", units = "in", height = 5, width = 8, res = 600)
 
 upset(dat.for.upset, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 7)
 
-#dev.off()
 ```
 
 # Figure S4)
@@ -192,35 +182,27 @@ gentet <- genbreak %>%
 ```
 
 ```{r}
-#png("../figures/supplemental/S4_betalactams.png")
 
 upset(genblacs, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
 
-#dev.off()
 ```
 
 ```{r}
-#png("../figures/supplemental/S4_FQ.png")
 
 upset(genfq, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
 
-#dev.off()
 ```
 
 ```{r}
-#png("../figures/supplemental/S4_macrolides.png")
 
 upset(genmac, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
 
-#dev.off()
 ```
 
 ```{r}
-#png("../figures/supplemental/S4_tetracyclines.png")
 
 upset(gentet, main.bar.color = "darkred", mainbar.y.label = "Number of Patients", matrix.color = "dark blue", sets.x.label = "", nsets = 10)
 
-#dev.off()
 ```
 
 # Figure S1 causual model Mitchell Muniak
