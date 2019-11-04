@@ -82,11 +82,14 @@ coxdf <-
 
 # Creating table 1
 
-```{r table 1}
+```{r}
 listVars <- c("BMI", "Age", "Sex", "ECOG PS", "CCI", "Cancer", "Staging", "Immunotherapy",
               "ABx within 28 days of ICI", "CS within 28 days of ICI")
 catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "CCI", "Staging", 
              "ABx within 28 days of ICI", "CS within 28 days of ICI")
+```
+
+```{r table 1}
 table1 <- CreateTableOne(vars = listVars,
                          data = coxdf,
                          factorVars = catVars)
@@ -101,10 +104,6 @@ table1
 ### ABx
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG PS", "CCI",  "Cancer", "Staging", "Immunotherapy",
-              "ABx within 28 days of ICI", "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "CCI", "Staging", 
-             "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table.S1 <- CreateTableOne(vars = listVars,
                            strata = "ABx within 28 days of ICI",
                            data = coxdf,
@@ -119,11 +118,6 @@ table.S1
 ### CS
 
 ```{r}
-listVars <- c("BMI", "Age", "Sex", "ECOG PS", "CCI", "Cancer", "Staging", 
-              "Immunotherapy", "ABx within 28 days of ICI", 
-              "CS within 28 days of ICI")
-catVars <- c("Sex", "Cancer", "Immunotherapy", "ECOG PS", "CCI", "Staging",
-             "ABx within 28 days of ICI", "CS within 28 days of ICI")
 table.S2 <- CreateTableOne(vars = listVars,
                            data = coxdf,
                            factorVars = catVars,
