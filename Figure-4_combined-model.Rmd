@@ -18,7 +18,7 @@ library(glue)
 
 
 ```{r}
-db <- readRDS("db.RDS")
+db <- readRDS("../db-for-git.RDS")
 ```
 
 ```{r}
@@ -61,9 +61,6 @@ comb_curv.leg <- ggsurvplot(fit = sfit, conf.int = FALSE, risk.table = TRUE, pva
 comb_curv.leg
 ```
 
-```{r}
-# ggsave(print(comb_curv), filename = "../figures/Figure-3/combined-curve.png", device = "png")
-```
 
 # B) Combined model for all cancers
 ```{r}
@@ -80,7 +77,6 @@ db <- db %>%
 cph <- coxph(Surv(days, vitalstatus) ~ ABx + CS + ECOG + CCI + `Stage IV` + BMI + Sex + Age, data = db)
 
 ggforest(cph) 
-  # + ggsave("../figures/Figure-3/coxph-ggforest-vis.png")
 ```
 
 
@@ -88,6 +84,8 @@ ggforest(cph)
 
 Please try to avoid unnecessarily rerunning the followingcode, it take ~20 minutes to complete this loop.
 ```{r perform percentile lasso takes a long time, eval = F}
+allcancers <- c('Other', 'Melanoma', 'Non-Small Cell Lung Cancer', 'Head and Neck Carcinoma', 'Renal Cell Carcinoma', 'Sarcoma', 'Bladder Cancer')
+
 all.percentile.res <- list()
 canc.percentile.res <- list()
 
