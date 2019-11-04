@@ -27,6 +27,7 @@ antiorder <- hazardtable %>%
   arrange(Average.Rank) 
 antiorder <- antiorder$Antibacterial
 
+
 taxa <- read.csv("fig5_ottid.csv", stringsAsFactors = FALSE) 
 tree <- read.tree("labelled_supertree_ottnames.tre")
 ```
@@ -126,8 +127,7 @@ tree.plot <- ggtree(subtree)  %<+%
   geom_cladelabel(node = 22, label = "Firmicutes \n(Gopalakrishnan)", 
                   geom = "text", color = "black", offset = -4.3, offset.text = -2.6, align = TRUE) +
   xlim(c(0,11.5)) 
-  
-tree.plot
+
 ```
 
 ```{r}
@@ -190,10 +190,9 @@ heat <- ggplot(data = susc, aes(fct_relevel(taxon, order),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         legend.position = "none")
 
-heat
 ```
 
-# Arrange and save the results
+# Arrange results
 
 ```{r}
 
@@ -211,90 +210,6 @@ test2
 
 ```
 
-# Fisher's exact tests
 
-Counting
-```{r}
-test <- susc %>%
-  mutate(tip.label = ifelse(taxon == "Klebsiella pneumoniae (species in domain Eukaryota)", 
-                            "Klebsiella pneumoniae", as.character(taxon))) %>%
-  left_join(resp.key)
-
-test2 <- test %>%
-  group_by(Antibiotic, Effective, resp.stat) %>%
-  tally() %>%
-  arrange(Antibiotic, Effective, resp.stat)
-```
-
-Ammoxicillin-Clavulanate
-```{r}
-x <- c(1,0,8,9)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Cephalosporin
-```{r}
-x <- c(7,4,2,5)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Fluoroquinolone
-```{r}
-x <- c(0,1,9,8)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-
-Linezolid
-```{r}
-x <- c(0,1,9,8)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Macrolide
-```{r}
-x <- c(4,2,5,7)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Metronidazole
-```{r}
-x <- c(1,5,8,4)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Piperacillin-Tazobactam
-```{r}
-x <- c(0,1,9,8)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Sulfamethoxazole-Trimethoprim
-```{r}
-x <- c(9,8,0,1)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Tetracycline
-```{r}
-x <- c(1,0,8,9)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
-
-Vancomycin
-```{r}
-x <- c(4,4,5,5)
-y <- matrix(x, ncol = 2)
-fisher.test(y)
-```
 
 
