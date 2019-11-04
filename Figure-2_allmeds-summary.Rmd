@@ -61,6 +61,11 @@ almeds.plots <- ggsurvplot(sfits, pval = TRUE, conf.int = FALSE,
                            fontsize = 6, font.legend = list(size = 12))
 ```
 
+```{r}
+almeds.plots[["abx.28.28"]]
+almeds.plots[["steroid.28.28"]]
+```
+
 
 # C) Heatmap of values when split by cancer
 
