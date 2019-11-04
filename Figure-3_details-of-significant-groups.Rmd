@@ -35,7 +35,7 @@ abxclasses <- c("BetaLactam", "Macrolide",  "Other.Antibacterial", "Fluoroquinol
 
 orgtype <- c("Antibacterial", "Antiviral", "Antifungal")
 
-allcancers <- unique(db$cancer.name)[1:7]
+allcancers <- c('Other', 'Melanoma', 'Non-Small Cell Lung Cancer', 'Head and Neck Carcinoma', 'Renal Cell Carcinoma', 'Sarcoma', 'Bladder Cancer')
 ```
 
 # A) Hazard Ratio over time
@@ -99,8 +99,8 @@ for(i in 1:length(leftanchor)){
   
 }
 
-sterpvaltime <- bind_rows(sterwindresults)
-sterpvaltime$leftanchor <- sterpvaltime$leftanchor + 15
+sterpvaltime <- bind_rows(sterwindresults) %>%
+  mutate(leftanchor = leftanchor + 15)
 ```
 
 
@@ -117,10 +117,11 @@ abx.zero.cohort <- db %>%
   filter(abx.180.180 == 0) %>%
   mutate(tmp = abx.180.180) %>%
   select(days, vitalstatus, tmp)
+
 leftanchor <-c(-180:151)
 abxwindresults <- list()
-i <- 1
 
+i <- 1
 abxfloattime$tmp2 <- check.window(abxfloattime$abxdays.to.iostart, c(leftanchor[i], leftanchor[i]+29))
   
 for(i in 1:length(leftanchor)){
@@ -135,6 +136,7 @@ for(i in 1:length(leftanchor)){
   abxfloatforsurv <- abxfloattime %>%
     filter(tmp == 1) %>%
     bind_rows(abx.zero.cohort)
+  
   try({
   survtemp <- coxph(Surv(days, vitalstatus) ~ tmp, data = abxfloatforsurv)
   abxwindresults[[i]] <- survtemp %>%
@@ -170,7 +172,6 @@ ggplot(data = allpvaltime, aes(x = leftanchor, y = hazard.ratio)) +
   labs(title = "", x = "Days relative to ICI start",y = "Hazard Ratio" ) +
   theme_bw() + 
   theme(axis.text = element_text(size = 12), axis.title = element_text(size = 15)) 
-  # ggsave("../figures/Figure-3/timing-hr_all.png", height = 7, width = 7, dpi = 600)
 ```
 
 
@@ -299,7 +300,7 @@ albac.dat <- albac.dat %>%
   rownames_to_column(var = "AbxClass") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
          cancer = "All") %>%
-  select(cancer, AbxClass, p.value, hazrat, labcol)
+  select(cancer, AbxClass, p.value, labcol)
 ```
 
 
@@ -336,7 +337,7 @@ alcancbac.dat <- alcancbac.dat %>%
   rownames_to_column(var = "cancer") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
          AbxClass = "All") %>%
-  select(cancer, AbxClass, p.value, hazrat, labcol)
+  select(cancer, AbxClass, p.value, labcol)
   
 ```
 
@@ -350,7 +351,8 @@ allallbac <- as.data.frame(cbind(AbxClass = "All", cancer = "All",
                                                                      data = db)))[1,2])) %>%
   mutate(p.value = as.numeric(as.character(p.value)),
          hazrat = as.numeric(as.character(hazrat)),
-         labcol = ifelse(hazrat < 1, "red", "black"))
+         labcol = ifelse(hazrat < 1, "red", "black")) %>%
+  select(cancer, AbxClass, p.value, labcol)
 ```
 
 Adding preserved full cohort:
@@ -435,7 +437,7 @@ alster.dat <- alster.dat %>%
   rownames_to_column(var = "Steroid.ID") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
          cancer = "All") %>%
-  select(cancer, Steroid.ID, p.value, hazrat, labcol)
+  select(cancer, Steroid.ID, p.value, labcol)
   
 ```
 
@@ -473,7 +475,7 @@ alcancster.dat <- alcancster.dat %>%
   rownames_to_column(var = "cancer") %>%
   mutate(labcol = ifelse(hazrat < 1, "red", "black"),
          Steroid.ID = "All") %>%
-  select(cancer, Steroid.ID, p.value, hazrat, labcol)
+  select(cancer, Steroid.ID, p.value, labcol)
   
 ```
 
@@ -487,7 +489,8 @@ allallster <- as.data.frame(cbind(Steroid.ID = "All", cancer = "All",
                                                                       data = db)))[1,2])) %>%
   mutate(p.value = as.numeric(as.character(p.value)),
          hazrat = as.numeric(as.character(hazrat)),
-         labcol = ifelse(hazrat < 1, "red", "black"))
+         labcol = ifelse(hazrat < 1, "red", "black")) %>%
+  select(cancer, Steroid.ID, p.value, labcol)
 ```
 
 Adding preserved full cohort:
@@ -646,7 +649,6 @@ test <- grid.arrange(
                         c(2,2,2))
 ) 
 
-# ggsave(plot = test, "../figures/Figure-3/heatmap_clustered-abx-classes.png", device = "png", height = 7, width = 7)
 ```
 
 
@@ -660,7 +662,6 @@ test2 <- grid.arrange(
                         c(2,2,2))
 ) 
 
-# ggsave(plot = test2, "../figures/Figure-3/heatmap_clustered-steroids.png", device = "png", height = 7, width = 7.5)
 ```
 
 
