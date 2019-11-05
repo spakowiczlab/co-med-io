@@ -1,5 +1,5 @@
 # co-med-io
-## The effect of Concomitant Medications in Immunotherapy 
+## The Effects of Concomitant Medications in Immunotherapy 
 
 This repository supports the manuscript, "Inferring the role of the microbiome on survival in patients treated with immune checkpoint inhibitors: causal modeling, timing, and classes of concomitant medications." Herein are the scripts to perform the analyses described and figures shown.
 
