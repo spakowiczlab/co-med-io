@@ -1,17 +1,19 @@
 # co-med-io
-## concomitant medications in immunotherapy 
+## The effect of Concomitant Medications in Immunotherapy 
 
-This repository supports the manuscript, "Antibiotics and corticosteroids, and overall survival in patients treated with immune checkpoint inhibitors: inferring the role of the microbiome". Herein are the data and scripts to perform the analyses described and figures shown.
+This repository supports the manuscript, "Inferring the role of the microbiome on survival in patients treated with immune checkpoint inhibitors: causal modeling, timing, and classes of concomitant medications." Herein are the scripts to perform the analyses described and figures shown.
 
 If you use this code, please cite the manuscript:
 
+> Spakowicz D, Hoyd R, Husain M, Bassett JS, Wang L, Tinoco G, Patel S, Burkart J, Miah A, Li M, Johns A, Grogan M, Carbone DP, Verschraegen CF, Kendra K, Otterson GA, Li L, Presley C, Owen DH. Inferring the role of the microbiome on survival in patients treated with immune checkpoint inhibitors: causal modeling, timing, and classes of concomitant medications. medRxiv. 2019 Sep 13;19006429. 
+
 and this repository:
 
-Data is available upon request. Please contact Dr. Dan Spakowicz at Daniel.Spakowicz@osumc.edu.
+At this time the data (i.e. `db.RDS`, called by each of the figure files) are only available upon request. Please contact Dan Spakowicz at Daniel dot Spakowicz at osumc dot edu.
 
 ## Project Summary
 
-This project is an analysis of historical patient data from the James Cancer Hospital and Solove Research Institute with the goal of relating medications that are known to affect the microbiome to the overall survival of patients receiving Immune Checkpoint Inhibitor therapy. Survival information and patient metadata was manually curated, and information on prescribed medications was obtained from an information warehouse and added to the metadata. 
+This project is an analysis of historical patient data from the The Ohio State University Comprehensive Cancer Center - James with the goal of relating medications that are known to affect the microbiome to the overall survival of patients receiving Immune Checkpoint Inhibitor therapy. Survival information and patient metadata were manually curated, and information on prescribed medications was obtained from an information warehouse and added to the metadata. 
 
 ## Files
 
