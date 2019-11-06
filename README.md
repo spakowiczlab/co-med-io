@@ -9,6 +9,8 @@ If you use this code, please cite the manuscript:
 
 and this repository:
 
+[![DOI](https://zenodo.org/badge/190640249.svg)](https://zenodo.org/badge/latestdoi/190640249)
+
 At this time the data (i.e. `db.RDS`, called by each of the figure files) are only available upon request. Please contact Dan Spakowicz at Daniel dot Spakowicz at osumc dot edu.
 
 ## Project Summary
