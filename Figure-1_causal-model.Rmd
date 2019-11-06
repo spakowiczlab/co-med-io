@@ -20,22 +20,25 @@ This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 ```{r, out.width="100%", out.height="100%"}
 
 
-g <- graph.formula("CCI" -+ "ABx" -+ "Microbiome" -+ "T-cell Mediated Inflammation" -+ "ICI Response" -+
-                     "Overall Survival",
-                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ "Microbiome" -+
-                     "T-cell Mediated Inflammation",
+g <- graph.formula("CCI" -+ "ABx" -+ "Microbiome" -+ 
+                      "T-cell Mediated Inflammation" -+ "ICI Response" -+ 
+                      "Overall Survival",
+                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ 
+                      "Microbiome" -+ "T-cell Mediated Inflammation",
                    "CCI" -+ "PPI" -+ "Microbiome",
                    "CCI" -+ "H2B" -+ "Microbiome",
                    "CCI" -+ "NSAIDs" -+ "Prostaglandin Inflammation",
                    "CCI" -+ "ECOG" -+ "BMI" -+ "Prostaglandin Inflammation",
                    "CCI" -+ "Statins" -+ "Prostaglandin Inflammation",
                    "Corticosteroids" -+ "T-cell Mediated Inflammation",
-                   "Age" -+ "Prostaglandin Inflammation" -+ "T-cell Mediated Inflammation",
+                   "Age" -+ "Prostaglandin Inflammation" -+ 
+                      "T-cell Mediated Inflammation",
                    "Age" -+ "T-cell Mediated Inflammation",
                    "Age" -+ "ECOG" -+ "Prostaglandin Inflammation",
                    "Staging" -+ "Prostaglandin Inflammation",
                    "ECOG" -+ "T-cell Mediated Inflammation",
-
+                   "ABx" -+ "microbiome" -+ "Prostaglandin Inflammation" -+ 
+                      "Overall Survival",
                    simplify = TRUE
                    )
 
@@ -65,7 +68,7 @@ tkplot(g,
       layout = layout.circle
       )
 ```
-This is figS1 for the paper. More edits will be made in adobe illustrator.
+This produces FigS1. Edits are made in Adobe Illustrator for Fig 1.
 
 ```{r}
 # Add edge labels for citing references
