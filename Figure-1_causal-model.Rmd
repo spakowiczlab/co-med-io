@@ -52,11 +52,11 @@ V(g)$color <- c("#cfb4de", "#77d1e5", "#aadab4", "#aadab4", "#e2bf99", "#e2bf99"
 
 # Modify edge widths to define our hypothesized primary pathway
 edge.arrow.sizes <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 
-                    1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+                    1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 edge.arrow.widths <- c(0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1, 1, 1, 1, 0.5, 1, 0.5, 
-                    1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
+                    1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5)
 edge.widths <- c(1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 1, 5, 1, 5, 1, 1, 1, 1, 1, 1, 1,
-                  1, 1, 1, 1, 1)
+                  1, 1, 1, 1, 1, 1, 1)
 
 # Create Figure 1, to be manipulated in Adobe Illustrator
 tkplot(g, 
@@ -72,7 +72,7 @@ This produces FigS1. Edits are made in Adobe Illustrator for Fig 1.
 
 ```{r}
 # Add edge labels for citing references
-letters.ext <- c(LETTERS, "AA")
+letters.ext <- c(LETTERS, "AA", "BB", "CC", "DD")
 
 E(g)$label = letters.ext[1:ecount(g)]
 
