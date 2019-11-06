@@ -72,7 +72,7 @@ This produces FigS1. Edits are made in Adobe Illustrator for Fig 1.
 
 ```{r}
 # Add edge labels for citing references
-letters.ext <- c(LETTERS, "AA", "BB", "CC", "DD")
+letters.ext <- c(LETTERS, "AA", "AB", "AC", "AD")
 
 E(g)$label = letters.ext[1:ecount(g)]
 
