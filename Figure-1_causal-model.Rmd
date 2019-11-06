@@ -37,7 +37,7 @@ g <- graph.formula("CCI" -+ "ABx" -+ "Microbiome" -+
                    "Age" -+ "ECOG" -+ "Prostaglandin Inflammation",
                    "Staging" -+ "Prostaglandin Inflammation",
                    "ECOG" -+ "T-cell Mediated Inflammation",
-                   "ABx" -+ "microbiome" -+ "Prostaglandin Inflammation" -+ 
+                   "ABx" -+ "Microbiome" -+ "Prostaglandin Inflammation" -+ 
                       "Overall Survival",
                    simplify = TRUE
                    )
