@@ -23,14 +23,14 @@ This is figure 1 for the paper.  More edits will be made in adobe illustrator.
 g <- graph.formula("CCI" -+ "ABx" -+ "Microbiome" -+ 
                       "T-cell Mediated Inflammation" -+ "ICI Response" -+ 
                       "Overall Survival",
-                   "CCI" -+ "Corticosteroids" -+ "Prostaglandin Inflammation" -+ 
+                   "CCI" -+ "CS" -+ "Prostaglandin Inflammation" -+ 
                       "Microbiome" -+ "T-cell Mediated Inflammation",
                    "CCI" -+ "PPI" -+ "Microbiome",
                    "CCI" -+ "H2B" -+ "Microbiome",
                    "CCI" -+ "NSAIDs" -+ "Prostaglandin Inflammation",
                    "CCI" -+ "ECOG" -+ "BMI" -+ "Prostaglandin Inflammation",
                    "CCI" -+ "Statins" -+ "Prostaglandin Inflammation",
-                   "Corticosteroids" -+ "T-cell Mediated Inflammation",
+                   "CS" -+ "T-cell Mediated Inflammation",
                    "Age" -+ "Prostaglandin Inflammation" -+ 
                       "T-cell Mediated Inflammation",
                    "Age" -+ "T-cell Mediated Inflammation",
