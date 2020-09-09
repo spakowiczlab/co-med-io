@@ -5,7 +5,7 @@ This repository supports the manuscript, "Inferring the role of the microbiome o
 
 If you use this code, please cite the manuscript:
 
-> Spakowicz D, Hoyd R, Husain M, Bassett JS, Wang L, Tinoco G, Patel S, Burkart J, Miah A, Li M, Johns A, Grogan M, Carbone DP, Verschraegen CF, Kendra K, Otterson GA, Li L, Presley C, Owen DH. Inferring the role of the microbiome on survival in patients treated with immune checkpoint inhibitors: causal modeling, timing, and classes of concomitant medications. medRxiv. 2019 Sep 13;19006429. 
+> Spakowicz D, Hoyd R, Muniak M, Husain M, Bassett JS, Wang L, Tinoco G, Patel SH, Burkart J, Miah A, Li M, Johns A, Grogan M, Carbone DP, Verschraegen CF, Kendra KL, Otterson GA, Li L, Presley CJ, Owen DH. Inferring the role of the microbiome on survival in patients treated with immune checkpoint inhibitors: causal modeling, timing, and classes of concomitant medications. BMC Cancer. 2020;20(1).
 
 and this repository:
 
