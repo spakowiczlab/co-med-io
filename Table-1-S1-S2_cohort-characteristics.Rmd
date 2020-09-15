@@ -17,7 +17,7 @@ library(glue)
 
 ```{r data}
 
-db <- readRDS("db.RDS")
+db <- readRDS("../db-for-git.RDS")
 
 db <-
   db %>%
@@ -55,8 +55,8 @@ ionames <- data.frame(immunotherapy = c(1,2,3,4,5,6,7,8,9,10),
 coxdf <- 
   db %>%
   select(vitalstatus, age, bmi.calc, ecog, sex, cancer.name, statin, ppi, 
-         nsaid_iostart, h2b_iostart, immunotherapy, other_io, staging, abx.28.28,
-         steroid.28.28) %>%
+         nsaid_iostart, h2b_iostart, immunotherapy, staging, abx.28.28,
+         steroid.28.28, comorb.score) %>%
   left_join(ionames) %>%
   mutate(`ECOG PS` = fct_relevel(ifelse(ecog > 2, ">2", ecog), "0","1","2",">2"),
          Staging  = ifelse(staging == 5, "Unknown", staging),
@@ -95,6 +95,7 @@ table1 <- CreateTableOne(vars = listVars,
                          factorVars = catVars)
 table1
 ```
+
 
 
 # Supplemental tables

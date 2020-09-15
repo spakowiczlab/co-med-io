@@ -18,7 +18,7 @@ library(UpSetR)
 ```
 
 ```{r load data}
-db <- readRDS("db.RDS")
+db <- readRDS("../db-for-git.RDS")
 ```
 
 ```{r}
@@ -104,6 +104,9 @@ labcol <- list()
 labs <- list()
 
 
+canccox <- list()
+coxmods <- list()
+
 for(c in allcancers){
   
   tmp <- subset(db, db$cancer.name == c)
@@ -113,12 +116,19 @@ for(c in allcancers){
     f <- as.formula(paste("Surv(days, vitalstatus) ~ ", s, sep = ""))
     
     try ({
-      
+
       sfits[[s]] <- surv_fit(formula = f, data = tmp)
       pvals[[s]] <- surv_pvalue(sfits[[s]])[1,2]
       
       x <- coefficients(summary(coxph(formula = f, data = tmp)))[,2]
       labs[[s]] <- ifelse(x < 1, "red", "black")
+      
+      coxmods[[s]] <- coxph(f, tmp) %>%
+        broom::tidy() %>%
+        mutate(cancer = c,
+               esitmate = exp(estimate),
+               conf.low = exp(conf.low),
+               conf.high = exp(conf.high))
       
     })
   }
@@ -126,11 +136,12 @@ for(c in allcancers){
   curvesbycancer[[c]] <- sfits
   pvalbycancer[[c]] <- pvals
   labcol[[c]] <- labs
+  canccox[[c]] <- bind_rows(coxmods)
   
   sfits <- list()
   pvals <- list()
   labs <- list()
-  
+  coxmods <- list()
 }
 
 
@@ -183,4 +194,12 @@ heat.plot <- heat.data %>%
 
 heat.plot
 
+```
+
+## Table of ABx hazard ratios
+```{r}
+bind_rows(canccox) %>%
+  filter(term == "abx.28.28") %>%
+  select(cancer, estimate, conf.low, conf.high, p.value) %>%
+  knitr::kable()
 ```
