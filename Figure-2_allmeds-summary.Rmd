@@ -198,8 +198,35 @@ heat.plot
 
 ## Table of ABx hazard ratios
 ```{r}
-bind_rows(canccox) %>%
+all.hr <- coxph(Surv(days, vitalstatus) ~ abx.28.28, db) %>%
+        broom::tidy() %>%
+        mutate(cancer = "All cancers",
+               esitmate = exp(estimate),
+               conf.low = exp(conf.low),
+               conf.high = exp(conf.high))
+
+bind_rows(bind_rows(canccox), all.hr) %>%
   filter(term == "abx.28.28") %>%
   select(cancer, estimate, conf.low, conf.high, p.value) %>%
+  knitr::kable()
+```
+
+# Table of ABx sample sizes
+
+```{r}
+all.ns <- db %>%
+  group_by(abx.28.28) %>%
+  tally() %>%
+  mutate(cancer.name = "All cancers", 
+         abx.28.28 = ifelse(abx.28.28 == 0, "No.ABx", "ABx")) %>%
+  spread(key = abx.28.28, value = n)
+
+split.cancer.ns <- db %>%
+  group_by(cancer.name, abx.28.28) %>%
+  tally() %>%
+  mutate(abx.28.28 = ifelse(abx.28.28 == 0, "No.ABx", "ABx")) %>%
+  spread(key = abx.28.28, value = n)
+
+bind_rows(all.ns, split.cancer.ns) %>%
   knitr::kable()
 ```
