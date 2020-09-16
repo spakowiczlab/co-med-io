@@ -461,7 +461,7 @@ for(c in allcancers){
       coxmods[[s]] &lt;- coxph(f, tmp) %&gt;%
         broom::tidy() %&gt;%
         mutate(cancer = c,
-               esitmate = exp(estimate),
+               estimate = exp(estimate),
                conf.low = exp(conf.low),
                conf.high = exp(conf.high))
       
@@ -532,7 +532,7 @@ heat.plot</code></pre>
 <pre class="r"><code>all.hr &lt;- coxph(Surv(days, vitalstatus) ~ abx.28.28, db) %&gt;%
         broom::tidy() %&gt;%
         mutate(cancer = &quot;All cancers&quot;,
-               esitmate = exp(estimate),
+               estimate = exp(estimate),
                conf.low = exp(conf.low),
                conf.high = exp(conf.high))
 
@@ -553,56 +553,56 @@ bind_rows(bind_rows(canccox), all.hr) %&gt;%
 <tbody>
 <tr class="odd">
 <td align="left">Other</td>
-<td align="right">0.7458502</td>
+<td align="right">2.108233</td>
 <td align="right">1.4982391</td>
 <td align="right">2.966580</td>
 <td align="right">0.0000187</td>
 </tr>
 <tr class="even">
 <td align="left">Melanoma</td>
-<td align="right">0.3812493</td>
+<td align="right">1.464112</td>
 <td align="right">1.0415842</td>
 <td align="right">2.058043</td>
 <td align="right">0.0282009</td>
 </tr>
 <tr class="odd">
 <td align="left">Non-Small Cell Lung Cancer</td>
-<td align="right">0.4052593</td>
+<td align="right">1.499691</td>
 <td align="right">1.0744493</td>
 <td align="right">2.093234</td>
 <td align="right">0.0172171</td>
 </tr>
 <tr class="even">
 <td align="left">Head and Neck Carcinoma</td>
-<td align="right">0.3136919</td>
+<td align="right">1.368468</td>
 <td align="right">0.6799882</td>
 <td align="right">2.754025</td>
 <td align="right">0.3793416</td>
 </tr>
 <tr class="odd">
 <td align="left">Renal Cell Carcinoma</td>
-<td align="right">0.6973622</td>
+<td align="right">2.008448</td>
 <td align="right">1.1950207</td>
 <td align="right">3.375559</td>
 <td align="right">0.0084752</td>
 </tr>
 <tr class="even">
 <td align="left">Sarcoma</td>
-<td align="right">0.1474386</td>
+<td align="right">1.158862</td>
 <td align="right">0.4758848</td>
 <td align="right">2.822031</td>
 <td align="right">0.7454205</td>
 </tr>
 <tr class="odd">
 <td align="left">Bladder Cancer</td>
-<td align="right">1.1026188</td>
+<td align="right">3.012044</td>
 <td align="right">1.4176402</td>
 <td align="right">6.399654</td>
 <td align="right">0.0041360</td>
 </tr>
 <tr class="even">
 <td align="left">All cancers</td>
-<td align="right">0.5718599</td>
+<td align="right">1.771559</td>
 <td align="right">1.5102535</td>
 <td align="right">2.078076</td>
 <td align="right">0.0000000</td>

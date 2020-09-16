@@ -126,7 +126,7 @@ for(c in allcancers){
       coxmods[[s]] <- coxph(f, tmp) %>%
         broom::tidy() %>%
         mutate(cancer = c,
-               esitmate = exp(estimate),
+               estimate = exp(estimate),
                conf.low = exp(conf.low),
                conf.high = exp(conf.high))
       
@@ -201,7 +201,7 @@ heat.plot
 all.hr <- coxph(Surv(days, vitalstatus) ~ abx.28.28, db) %>%
         broom::tidy() %>%
         mutate(cancer = "All cancers",
-               esitmate = exp(estimate),
+               estimate = exp(estimate),
                conf.low = exp(conf.low),
                conf.high = exp(conf.high))
 
