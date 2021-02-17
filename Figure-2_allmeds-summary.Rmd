@@ -230,3 +230,39 @@ split.cancer.ns <- db %>%
 bind_rows(all.ns, split.cancer.ns) %>%
   knitr::kable()
 ```
+
+# PPI additional information
+
+## ns
+```{r}
+all.ns <- db %>%
+  group_by(ppi) %>%
+  tally() %>%
+  mutate(cancer.name = "All cancers", 
+         ppi = ifelse(ppi == 0, "No.PPI", "PPI")) %>%
+  spread(key = ppi, value = n)
+
+split.cancer.ns <- db %>%
+  group_by(cancer.name, ppi) %>%
+  tally() %>%
+  mutate(ppi = ifelse(ppi == 0, "No.PPI", "PPI")) %>%
+  spread(key = ppi, value = n)
+
+bind_rows(all.ns, split.cancer.ns) %>%
+  knitr::kable()
+```
+## Cox Proportional Hazards results
+
+```{r}
+all.hr <- coxph(Surv(days, vitalstatus) ~ ppi, db) %>%
+        broom::tidy() %>%
+        mutate(cancer = "All cancers",
+               estimate = exp(estimate),
+               conf.low = exp(conf.low),
+               conf.high = exp(conf.high))
+
+bind_rows(bind_rows(canccox), all.hr) %>%
+  filter(term == "ppi") %>%
+  select(cancer, estimate, conf.low, conf.high, p.value) %>%
+  knitr::kable()
+```

@@ -624,28 +624,10 @@ split.cancer.ns &lt;- db %&gt;%
   group_by(cancer.name, abx.28.28) %&gt;%
   tally() %&gt;%
   mutate(abx.28.28 = ifelse(abx.28.28 == 0, &quot;No.ABx&quot;, &quot;ABx&quot;)) %&gt;%
-  spread(key = abx.28.28, value = n)</code></pre>
-<pre><code>## Warning: Factor `cancer.name` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
+  spread(key = abx.28.28, value = n)
 
-## Warning: Factor `cancer.name` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-
-## Warning: Factor `cancer.name` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-
-## Warning: Factor `cancer.name` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-
-## Warning: Factor `cancer.name` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-
-## Warning: Factor `cancer.name` contains implicit NA, consider using
-## `forcats::fct_explicit_na`</code></pre>
-<pre class="r"><code>bind_rows(all.ns, split.cancer.ns) %&gt;%
+bind_rows(all.ns, split.cancer.ns) %&gt;%
   knitr::kable()</code></pre>
-<pre><code>## Warning in bind_rows_(x, .id): binding character and factor vector,
-## coercing into character vector</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -702,6 +684,168 @@ split.cancer.ns &lt;- db %&gt;%
 </tr>
 </tbody>
 </table>
+</div>
+<div id="ppi-additional-information" class="section level1">
+<h1>PPI additional information</h1>
+<div id="ns" class="section level2">
+<h2>ns</h2>
+<pre class="r"><code>all.ns &lt;- db %&gt;%
+  group_by(ppi) %&gt;%
+  tally() %&gt;%
+  mutate(cancer.name = &quot;All cancers&quot;, 
+         ppi = ifelse(ppi == 0, &quot;No.PPI&quot;, &quot;PPI&quot;)) %&gt;%
+  spread(key = ppi, value = n)
+
+split.cancer.ns &lt;- db %&gt;%
+  group_by(cancer.name, ppi) %&gt;%
+  tally() %&gt;%
+  mutate(ppi = ifelse(ppi == 0, &quot;No.PPI&quot;, &quot;PPI&quot;)) %&gt;%
+  spread(key = ppi, value = n)
+
+bind_rows(all.ns, split.cancer.ns) %&gt;%
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">cancer.name</th>
+<th align="right">No.PPI</th>
+<th align="right">PPI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">All cancers</td>
+<td align="right">713</td>
+<td align="right">360</td>
+</tr>
+<tr class="even">
+<td align="left">Bladder Cancer</td>
+<td align="right">23</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">Head and Neck Carcinoma</td>
+<td align="right">44</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">Melanoma</td>
+<td align="right">213</td>
+<td align="right">108</td>
+</tr>
+<tr class="odd">
+<td align="left">Non-Small Cell Lung Cancer</td>
+<td align="right">115</td>
+<td align="right">81</td>
+</tr>
+<tr class="even">
+<td align="left">Other</td>
+<td align="right">156</td>
+<td align="right">69</td>
+</tr>
+<tr class="odd">
+<td align="left">Renal Cell Carcinoma</td>
+<td align="right">56</td>
+<td align="right">48</td>
+</tr>
+<tr class="even">
+<td align="left">Sarcoma</td>
+<td align="right">34</td>
+<td align="right">11</td>
+</tr>
+<tr class="odd">
+<td align="left">NA</td>
+<td align="right">72</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">## Cox Proportional Hazards r</td>
+<td align="right">esults</td>
+<td align="right"></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>all.hr &lt;- coxph(Surv(days, vitalstatus) ~ ppi, db) %&gt;%
+        broom::tidy() %&gt;%
+        mutate(cancer = &quot;All cancers&quot;,
+               estimate = exp(estimate),
+               conf.low = exp(conf.low),
+               conf.high = exp(conf.high))
+
+bind_rows(bind_rows(canccox), all.hr) %&gt;%
+  filter(term == &quot;ppi&quot;) %&gt;%
+  select(cancer, estimate, conf.low, conf.high, p.value) %&gt;%
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">cancer</th>
+<th align="right">estimate</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Other</td>
+<td align="right">1.4288092</td>
+<td align="right">1.0134111</td>
+<td align="right">2.014479</td>
+<td align="right">0.0417531</td>
+</tr>
+<tr class="even">
+<td align="left">Melanoma</td>
+<td align="right">1.0351024</td>
+<td align="right">0.7671136</td>
+<td align="right">1.396712</td>
+<td align="right">0.8214477</td>
+</tr>
+<tr class="odd">
+<td align="left">Non-Small Cell Lung Cancer</td>
+<td align="right">1.1541850</td>
+<td align="right">0.8340946</td>
+<td align="right">1.597113</td>
+<td align="right">0.3868808</td>
+</tr>
+<tr class="even">
+<td align="left">Head and Neck Carcinoma</td>
+<td align="right">0.8397198</td>
+<td align="right">0.4320668</td>
+<td align="right">1.631992</td>
+<td align="right">0.6063755</td>
+</tr>
+<tr class="odd">
+<td align="left">Renal Cell Carcinoma</td>
+<td align="right">1.0575198</td>
+<td align="right">0.6432508</td>
+<td align="right">1.738588</td>
+<td align="right">0.8254932</td>
+</tr>
+<tr class="even">
+<td align="left">Sarcoma</td>
+<td align="right">0.3135068</td>
+<td align="right">0.1101612</td>
+<td align="right">0.892206</td>
+<td align="right">0.0297271</td>
+</tr>
+<tr class="odd">
+<td align="left">Bladder Cancer</td>
+<td align="right">0.5406137</td>
+<td align="right">0.2540996</td>
+<td align="right">1.150191</td>
+<td align="right">0.1103319</td>
+</tr>
+<tr class="even">
+<td align="left">All cancers</td>
+<td align="right">0.9942082</td>
+<td align="right">0.8511611</td>
+<td align="right">1.161296</td>
+<td align="right">0.9415779</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
