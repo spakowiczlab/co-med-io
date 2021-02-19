@@ -1,5 +1,5 @@
 ---
-title: "Code to produce Figure 1: Summary of all medication effects at iostart"
+title: "Code to produce Figure 2: Summary of all medication effects at iostart"
 author: "Rebecca Hoyd"
 date: "May 10, 2019"
 output: html_document
